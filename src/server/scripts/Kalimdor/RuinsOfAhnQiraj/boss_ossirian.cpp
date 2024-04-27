@@ -289,7 +289,7 @@ struct boss_ossirian : public BossAI
                     events.ScheduleEvent(EVENT_SILENCE, 20s, 30s);
                     break;
                 case EVENT_CYCLONE:
-                    DoCastVictim(SPELL_ENVELOPING_WINDS);
+                    //DoCastVictim(SPELL_ENVELOPING_WINDS);  //控制技能包围之风 
                     events.ScheduleEvent(EVENT_CYCLONE, 20s);
                     break;
                 case EVENT_STOMP:

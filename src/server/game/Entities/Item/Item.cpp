@@ -968,6 +968,29 @@ void Item::ClearEnchantment(EnchantmentSlot slot)
     SetState(ITEM_CHANGED, GetOwner());
 }
 
+// eluna 补充功能 根据附魔槽位获取物品模板
+ItemTemplate const* Item::GetGemProtoByEnchantSlot(uint32 enchant_slot) const
+{
+    if (enchant_slot < SOCK_ENCHANTMENT_SLOT || enchant_slot >= SOCK_ENCHANTMENT_SLOT + MAX_GEM_SOCKETS)
+        return nullptr; // 确保enchant_slot在有效范围内
+
+    uint32 enchant_id = GetEnchantmentId(EnchantmentSlot(enchant_slot));
+    if (!enchant_id) // 检查这个插槽是否有宝石
+        return nullptr;
+
+    SpellItemEnchantmentEntry const* enchantEntry = sSpellItemEnchantmentStore.LookupEntry(enchant_id);
+    if (!enchantEntry) // 检查是否有效的宝石ID
+        return nullptr;
+
+    uint32 gemid = enchantEntry->GemID;
+    if (!gemid)
+        return nullptr;
+
+    // 获取宝石的物品模板
+    ItemTemplate const* gemProto = sObjectMgr->GetItemTemplate(gemid);
+    return gemProto; // 返回宝石的物品模板，如果没有找到，则返回nullptr
+}
+
 bool Item::GemsFitSockets() const
 {
     for (uint32 enchant_slot = SOCK_ENCHANTMENT_SLOT; enchant_slot < SOCK_ENCHANTMENT_SLOT + MAX_GEM_SOCKETS; ++enchant_slot)

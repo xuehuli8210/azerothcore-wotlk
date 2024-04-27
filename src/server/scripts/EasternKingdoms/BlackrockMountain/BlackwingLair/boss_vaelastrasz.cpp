@@ -99,7 +99,7 @@ public:
         void Reset() override
         {
             _Reset();
-            me->SetHealth(me->CountPctFromMaxHealth(30));
+            me->SetHealth(me->CountPctFromMaxHealth(100));
 
             if (!_introDone)
             {
@@ -159,7 +159,7 @@ public:
                     {
                         case EVENT_SPEECH_1:
                             me->SetStandState(UNIT_STAND_STATE_STAND);
-                            me->SummonCreature(NPC_VICTOR_NEFARIUS, aNefariusSpawnLoc[0], aNefariusSpawnLoc[1], aNefariusSpawnLoc[2], aNefariusSpawnLoc[3], TEMPSUMMON_TIMED_DESPAWN, 26000);
+                            me->SummonCreature(NPC_VICTOR_NEFARIUS, aNefariusSpawnLoc[0], aNefariusSpawnLoc[1], aNefariusSpawnLoc[2], aNefariusSpawnLoc[3], TEMPSUMMON_TIMED_DESPAWN, 2000);
                             _eventsIntro.ScheduleEvent(EVENT_SPEECH_2, 1s);
                             me->SetUnitFlag(UNIT_FLAG_NOT_SELECTABLE);
                             break;
@@ -170,7 +170,7 @@ public:
                                 nefarius->Yell(SAY_NEFARIAN_VAEL_INTRO);
                                 nefarius->SetStandState(UNIT_STAND_STATE_STAND);
                             }
-                            _eventsIntro.ScheduleEvent(EVENT_SPEECH_3, 18s);
+                            _eventsIntro.ScheduleEvent(EVENT_SPEECH_3, 2s);
                             break;
                         case EVENT_SPEECH_3:
                             if (Creature* nefarius = me->GetMap()->GetCreature(m_nefariusGuid))
@@ -180,17 +180,17 @@ public:
                         case EVENT_SPEECH_4:
                             Talk(SAY_LINE1);
                             me->HandleEmoteCommand(EMOTE_ONESHOT_TALK);
-                            _eventsIntro.ScheduleEvent(EVENT_SPEECH_5, 12s);
+                            _eventsIntro.ScheduleEvent(EVENT_SPEECH_5, 2s);
                             break;
                         case EVENT_SPEECH_5:
                             Talk(SAY_LINE2);
                             me->HandleEmoteCommand(EMOTE_ONESHOT_TALK);
-                            _eventsIntro.ScheduleEvent(EVENT_SPEECH_6, 12s);
+                            _eventsIntro.ScheduleEvent(EVENT_SPEECH_6, 2s);
                             break;
                         case EVENT_SPEECH_6:
                             Talk(SAY_LINE3);
                             me->HandleEmoteCommand(EMOTE_ONESHOT_TALK);
-                            _eventsIntro.ScheduleEvent(EVENT_SPEECH_7, 17s);
+                            _eventsIntro.ScheduleEvent(EVENT_SPEECH_7, 2s);
                             me->RemoveUnitFlag(UNIT_FLAG_NOT_SELECTABLE);
                             break;
                         case EVENT_SPEECH_7:

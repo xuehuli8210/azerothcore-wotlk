@@ -184,7 +184,7 @@ public:
             switch (events.ExecuteEvent())
             {
                 case EVENT_DISRUPTION:
-                    me->CastSpell(me, SPELL_SPELL_DISRUPTION, false);
+                    //me->CastSpell(me, SPELL_SPELL_DISRUPTION, false); //施法速度降低300%
                     events.Repeat(10s);
                     break;
                 case EVENT_DECEPIT_FEVER:

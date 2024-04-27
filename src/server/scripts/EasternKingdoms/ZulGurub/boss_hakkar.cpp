@@ -51,10 +51,10 @@ enum Spells
     SPELL_ENRAGE                = 24318,
     // The Aspects of all High Priests spells
     SPELL_ASPECT_OF_JEKLIK      = 24687,
-    SPELL_ASPECT_OF_VENOXIS     = 24688,
-    SPELL_ASPECT_OF_MARLI       = 24686,
-    SPELL_ASPECT_OF_THEKAL      = 24689,
-    SPELL_ASPECT_OF_ARLOKK      = 24690,
+    SPELL_ASPECT_OF_VENOXIS     = 24688,   //对附近的敌人射出毒液，造成自然伤害，并在接下来的$d内每$t2秒造成一次额外伤害。
+    SPELL_ASPECT_OF_MARLI       = 24688,  //大型眩晕
+    SPELL_ASPECT_OF_THEKAL      = 24688,  //150攻速
+    SPELL_ASPECT_OF_ARLOKK      = 24688,  //问题技能
     SPELL_POISONOUS_BLOOD       = 24321
 };
 

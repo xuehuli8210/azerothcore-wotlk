@@ -300,30 +300,26 @@ public:
         void JustEngagedWith(Unit* who) override
         {
             BossAI::JustEngagedWith(who);
-            Talk(SAY_SUMMON_MINIONS);
-            me->SetUnitFlag(UNIT_FLAG_NON_ATTACKABLE | UNIT_FLAG_DISABLE_MOVE);
-            me->RemoveAllAttackers();
-            me->SetTarget();
-            me->SetReactState(REACT_PASSIVE);
-            me->CastSpell(me, SPELL_KELTHUZAD_CHANNEL, false);
-            events.ScheduleEvent(EVENT_SPAWN_POOL, 5s);
-            events.ScheduleEvent(EVENT_SUMMON_SOLDIER, 6400ms);
-            events.ScheduleEvent(EVENT_SUMMON_UNSTOPPABLE_ABOMINATION, 10s);
-            events.ScheduleEvent(EVENT_SUMMON_SOUL_WEAVER, 12s);
-            events.ScheduleEvent(EVENT_PHASE_2, 228s);
-            events.ScheduleEvent(EVENT_ENRAGE, 15min);
-            if (pInstance)
-            {
-                if (GameObject* go = me->GetMap()->GetGameObject(pInstance->GetGuidData(DATA_KELTHUZAD_FLOOR)))
-                {
-                    events.ScheduleEvent(EVENT_FLOOR_CHANGE, 15s);
-                    go->SetGoState(GO_STATE_ACTIVE);
-                }
-            }
-            if (GameObject* go = me->GetMap()->GetGameObject(pInstance->GetGuidData(DATA_KELTHUZAD_GATE)))
-            {
-                go->SetGoState(GO_STATE_READY);
-            }
+            // 直接进入第二阶段
+            Talk(EMOTE_PHASE_TWO);
+            Talk(SAY_AGGRO);
+            events.Reset();
+            summons.DoAction(ACTION_SECOND_PHASE);
+            me->RemoveUnitFlag(UNIT_FLAG_NON_ATTACKABLE | UNIT_FLAG_DISABLE_MOVE);
+            me->GetMotionMaster()->MoveChase(me->GetVictim());
+            me->RemoveAura(SPELL_KELTHUZAD_CHANNEL);
+            me->SetReactState(REACT_AGGRESSIVE);
+            events.ScheduleEvent(EVENT_FROST_BOLT_SINGLE, 2s, 10s);
+            events.ScheduleEvent(EVENT_FROST_BOLT_MULTI, 15s, 30s);
+            events.ScheduleEvent(EVENT_DETONATE_MANA, 30s);
+            events.ScheduleEvent(EVENT_PHASE_3, 1s);
+            events.ScheduleEvent(EVENT_SHADOW_FISSURE, 25s);
+            events.ScheduleEvent(EVENT_FROST_BLAST, 45s);
+    if (Is25ManRaid())
+    {
+        events.ScheduleEvent(EVENT_CHAINS, 90s);
+    }
+    events.ScheduleEvent(EVENT_ENRAGE, 15min);
         }
 
         void JustSummoned(Creature* cr) override

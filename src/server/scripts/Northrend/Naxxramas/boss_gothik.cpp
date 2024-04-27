@@ -254,24 +254,23 @@ public:
         {
             BossAI::JustEngagedWith(who);
             me->SetInCombatWithZone();
-            Talk(SAY_INTRO_1);
-            events.ScheduleEvent(EVENT_INTRO_2, 4s);
-            events.ScheduleEvent(EVENT_INTRO_3, 9s);
-            events.ScheduleEvent(EVENT_INTRO_4, 14s);
+            //Talk(SAY_INTRO_1);
+            //events.ScheduleEvent(EVENT_INTRO_2, 4s);
+            //events.ScheduleEvent(EVENT_INTRO_3, 9s);
+            //events.ScheduleEvent(EVENT_INTRO_4, 14s);
             me->SetUnitFlag(UNIT_FLAG_DISABLE_MOVE);
-            events.ScheduleEvent(EVENT_SUMMON_ADDS, 30s);
-            events.ScheduleEvent(EVENT_CHECK_PLAYERS, 2min);
-            if (pInstance)
-            {
-                if (GameObject* go = me->GetMap()->GetGameObject(pInstance->GetGuidData(DATA_GOTHIK_ENTER_GATE)))
-                {
-                    go->SetGoState(GO_STATE_READY);
-                }
-                if (GameObject* go = me->GetMap()->GetGameObject(pInstance->GetGuidData(DATA_GOTHIK_INNER_GATE)))
-                {
-                    go->SetGoState(GO_STATE_READY);
-                }
-            }
+            //events.ScheduleEvent(EVENT_SUMMON_ADDS, 30s);
+            //events.ScheduleEvent(EVENT_CHECK_PLAYERS, 2min);
+            me->CastSpell(me, SPELL_TELEPORT_LIVE, false);
+            me->SetReactState(REACT_AGGRESSIVE);
+            me->RemoveUnitFlag(UNIT_FLAG_DISABLE_MOVE);
+            me->SetImmuneToPC(false);
+            me->RemoveAllAuras();
+            events.ScheduleEvent(EVENT_SHADOW_BOLT, 1s);
+            events.ScheduleEvent(EVENT_HARVEST_SOUL, 5s, 15s);
+            events.ScheduleEvent(EVENT_TELEPORT, 20s);
+            events.ScheduleEvent(EVENT_CHECK_HEALTH, 1s);
+            secondPhase = true; // 确保Boss能够受到伤害
         }
 
         void JustSummoned(Creature* summon) override

@@ -55,17 +55,6 @@ static SHostageInfo HostageInfo[] =
 
 Position const HarrisonJonesLoc = {120.687f, 1674.0f, 42.0217f, 1.59044f};
 
-ObjectData const creatureData[] =
-{
-    { NPC_SPIRIT_LYNX, DATA_SPIRIT_LYNX },
-    { 0,               0                }
-};
-
-ObjectData const gameObjectData[] =
-{
-    { 0,               0                }
-};
-
 class instance_zulaman : public InstanceMapScript
 {
 public:
@@ -103,7 +92,6 @@ public:
         void Initialize() override
         {
             SetHeaders(DataHeader);
-            LoadObjectData(creatureData, gameObjectData);
             memset(&m_auiEncounter, 0, sizeof(m_auiEncounter));
 
             QuestTimer = 0;
@@ -115,6 +103,9 @@ public:
                 RandVendor[i] = NOT_STARTED;
 
             m_auiEncounter[DATA_GONGEVENT] = NOT_STARTED;
+            // 确保在初始化时设置大门状态为开启
+            //HandleGameObject(MassiveGateGUID, true);
+            
         }
 
         bool IsEncounterInProgress() const override
@@ -147,7 +138,6 @@ public:
                 default:
                     break;
             }
-            InstanceScript::OnCreatureCreate(creature);
         }
 
         void OnGameObjectCreate(GameObject* go) override
@@ -165,6 +155,7 @@ public:
                     break;
                 case GO_MASSIVE_GATE:
                     MassiveGateGUID = go->GetGUID();
+                    go->SetGoState(GO_STATE_ACTIVE);
                     break;
                 case GO_DOOR_AKILZON:
                     AkilzonDoorGUID = go->GetGUID();

@@ -135,11 +135,11 @@ public:
         {
             _JustEngagedWith();
 
-            events.ScheduleEvent(EVENT_CLEAVE, 15s);
-            events.ScheduleEvent(EVENT_STOMP, 35s);
-            events.ScheduleEvent(EVENT_FIREBALL, 7s);
-            events.ScheduleEvent(EVENT_CONFLAGRATION, 12s);
-
+            //events.ScheduleEvent(EVENT_CLEAVE, 15s);
+            //events.ScheduleEvent(EVENT_STOMP, 35s);
+           // events.ScheduleEvent(EVENT_FIREBALL, 7s);
+            //events.ScheduleEvent(EVENT_CONFLAGRATION, 12s);
+            DoChangePhase(); // 直接触发第二阶段
             instance->SetData(DATA_EGG_EVENT, IN_PROGRESS);
         }
 

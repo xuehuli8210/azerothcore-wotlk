@@ -44,10 +44,10 @@ enum Spells
     SPELL_FROSTBURN                                        = 23187,   //Frost burn 23187, 23189
     // Brood Affliction 23173 - Scripted Spell that cycles through all targets within 100 yards and has a chance to cast one of the afflictions on them
     // Since Scripted spells arn't coded I'll just write a function that does the same thing
-    SPELL_BROODAF_BLUE                                     = 23153,   //Blue affliction 23153
+    SPELL_BROODAF_BLUE                                     = 23154, // 23153,   //Blue affliction 23153
     SPELL_BROODAF_BLACK                                    = 23154,   //Black affliction 23154
     SPELL_BROODAF_RED                                      = 23155,   //Red affliction 23155 (23168 on death)
-    SPELL_BROODAF_BRONZE                                   = 23170,   //Bronze Affliction  23170
+    SPELL_BROODAF_BRONZE                                   = 23154, //23170,   //Bronze Affliction  23170
     SPELL_BROODAF_GREEN                                    = 23169,   //Brood Affliction Green 23169
     SPELL_CHROMATIC_MUT_1                                  = 23174,   //Spell cast on player if they get all 5 debuffs
 
@@ -188,12 +188,13 @@ public:
                             for (Player* player : playerTargets)
                             {
                                 DoCast(player, afflictionSpellID, true);
-
+                                /*
                                 if (player->HasAura(SPELL_BROODAF_BLUE) && player->HasAura(SPELL_BROODAF_BLACK) && player->HasAura(SPELL_BROODAF_RED) &&
                                     player->HasAura(SPELL_BROODAF_BRONZE) && player->HasAura(SPELL_BROODAF_GREEN))
                                 {
                                     DoCast(player, SPELL_CHROMATIC_MUT_1);
                                 }
+                                */
                             }
                         }
                         events.ScheduleEvent(EVENT_AFFLICTION, 10s);

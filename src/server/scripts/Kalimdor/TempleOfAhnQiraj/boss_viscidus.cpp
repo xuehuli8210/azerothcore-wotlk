@@ -133,6 +133,13 @@ struct boss_viscidus : public BossAI
 
     void DamageTaken(Unit* attacker, uint32& damage, DamageEffectType effType, SpellSchoolMask spellSchoolMask) override
     {
+            // 在这里添加额外的检查条件
+        if (me->HealthBelowPct(1))
+        {
+            Unit::Kill(attacker, me);
+            return;
+        }
+        /*
         if (me->HealthBelowPct(5))
             damage = 0;
 
@@ -140,7 +147,7 @@ struct boss_viscidus : public BossAI
         {
             return;
         }
-
+        */
         if (_phase != PHASE_MELEE)
         {
             if (_phase == PHASE_FROST && effType == DIRECT_DAMAGE && (spellSchoolMask & SPELL_SCHOOL_MASK_FROST) != 0)
@@ -366,7 +373,7 @@ struct npc_toxic_slime : public ScriptedAI
 
     void InitializeAI() override
     {
-        me->SetCombatMovement(false);
+        SetCombatMovement(false);
         DoCastSelf(SPELL_TOXIN);
 
         InstanceScript* instance = me->GetInstanceScript();

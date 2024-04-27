@@ -374,6 +374,7 @@ public:
                 switch (eventId)
                 {
                     case EVENT_RAZOR_SPAWN:
+                        /*
                         if (EggEvent == IN_PROGRESS)
                         {
                             bool spawnMoreAdds = true;
@@ -415,6 +416,7 @@ public:
                                 _events.ScheduleEvent(EVENT_RAZOR_SPAWN, 15000);
                             }
                         }
+                        */
                         break;
                     case EVENT_RAZOR_PHASE_TWO:
                         _events.CancelEvent(EVENT_RAZOR_SPAWN);

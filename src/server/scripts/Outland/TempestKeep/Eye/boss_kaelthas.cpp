@@ -316,26 +316,19 @@ struct boss_kaelthas : public BossAI
     {
         if (_phase == PHASE_NONE && who->GetTypeId() == TYPEID_PLAYER && me->IsValidAttackTarget(who))
         {
-            _phase = PHASE_SINGLE_ADVISOR;
+            _phase = PHASE_FINAL;  // 直接设置为最终阶段
             me->SetInCombatWithZone();
             Talk(SAY_INTRO);
-            ScheduleUniqueTimedEvent(23s, [&]
+            // 快速进入最后阶段的事件
+            scheduler.Schedule(1s, [this](TaskContext context)
             {
-                Talk(SAY_INTRO_THALADRED);
-            }, EVENT_PREFIGHT_PHASE11);
-            ScheduleUniqueTimedEvent(30s, [&]
-            {
-                if (Creature* thaladred = summons.GetCreatureWithEntry(NPC_THALADRED))
-                {
-                    thaladred->SetReactState(REACT_AGGRESSIVE);
-                    thaladred->RemoveUnitFlag(UNIT_FLAG_NON_ATTACKABLE);
-                    if (Unit* target = SelectTarget(SelectTargetMethod::Random, 0))
-                        thaladred->AI()->AttackStart(target);
-                    thaladred->SetInCombatWithZone();
-                }
-            }, EVENT_PREFIGHT_PHASE12);
+                // 跳过所有顾问和武器阶段，直接进行最终阶段的准备和攻击
+                DoCastVictim(SPELL_FIREBALL);
+                context.Repeat(2s);
+            });
         }
     }
+
 
     void JustEngagedWith(Unit* who) override
     {

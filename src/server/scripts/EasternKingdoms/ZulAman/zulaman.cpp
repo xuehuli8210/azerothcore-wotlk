@@ -655,7 +655,7 @@ public:
                 {
                     switch (_gongEvent)
                     {
-                        case GONG_EVENT_1:
+                        case GONG_EVENT_7:
                             me->GetMotionMaster()->MovePath(HARRISON_MOVE_1, false);
                             _gongEvent = GONG_EVENT_2;
                             _gongTimer = 12000;
@@ -710,7 +710,7 @@ public:
                             _gongTimer = 7000;
                             _gongEvent = GONG_EVENT_7;
                             break;
-                        case GONG_EVENT_7:
+                        case GONG_EVENT_1:
                             if (!uiTargetGUID)
                             {
                                 std::list<Creature*> targetList;
@@ -741,7 +741,7 @@ public:
 
                             if (GameObject* gate = me->GetMap()->GetGameObject(instance->GetGuidData(GO_MASSIVE_GATE)))
                                 gate->SetGoState(GO_STATE_ACTIVE);
-                            _gongTimer = 2000;
+                            _gongTimer = 1000;
                             _gongEvent = GONG_EVENT_8;
                             break;
                         case GONG_EVENT_8:

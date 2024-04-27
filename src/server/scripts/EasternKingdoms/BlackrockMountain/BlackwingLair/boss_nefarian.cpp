@@ -319,30 +319,32 @@ public:
                 me->RemoveAura(SPELL_ROOT_SELF);
                 summons.DespawnAll();
             }
+            if(action == 888) // 进入二阶段 
+            {
+                if (Creature* nefarian = me->SummonCreature(NPC_NEFARIAN, NefarianSpawn))
+                {
+                    nefarian->setActive(true);
+                    nefarian->SetCanFly(true);
+                    nefarian->SetDisableGravity(true);
+                    nefarian->GetMotionMaster()->MovePath(NEFARIAN_PATH, false);
+                }
 
+                events.Reset();
+                DoCastSelf(SPELL_ROOT_SELF, true);
+                me->SetVisible(false);
+                // Stop spawning adds
+                EntryCheckPredicate pred(_nefarianRightTunnel);
+                summons.DoAction(ACTION_SPAWNER_STOP, pred);
+                EntryCheckPredicate pred2(_nefarianLeftTunnel);
+                summons.DoAction(ACTION_SPAWNER_STOP, pred2);
+            }
+            
             if (action == ACTION_ADD_KILLED)
             {
                 KilledAdds++;
-
-                if (KilledAdds == MAX_DRAKONID_KILLED)
-                {
-                    if (Creature* nefarian = me->SummonCreature(NPC_NEFARIAN, NefarianSpawn))
-                    {
-                        nefarian->setActive(true);
-                        nefarian->SetCanFly(true);
-                        nefarian->SetDisableGravity(true);
-                        nefarian->GetMotionMaster()->MovePath(NEFARIAN_PATH, false);
-                    }
-
-                    events.Reset();
-                    DoCastSelf(SPELL_ROOT_SELF, true);
-                    me->SetVisible(false);
-                    // Stop spawning adds
-                    EntryCheckPredicate pred(_nefarianRightTunnel);
-                    summons.DoAction(ACTION_SPAWNER_STOP, pred);
-                    EntryCheckPredicate pred2(_nefarianLeftTunnel);
-                    summons.DoAction(ACTION_SPAWNER_STOP, pred2);
-                }
+                //if (KilledAdds == MAX_DRAKONID_KILLED) //跳过一阶段结束检测
+                //{ 
+                //}
             }
         }
 
@@ -356,19 +358,20 @@ public:
         {
             _JustEngagedWith();
 
-            Talk(SAY_GAMESBEGIN_2);
+            //Talk(SAY_GAMESBEGIN_2);
 
-            DoCast(me, SPELL_NEFARIANS_BARRIER);
-            me->SetCombatMovement(false);
-            me->SetImmuneToPC(false);
-            AttackStart(SelectTarget(SelectTargetMethod::Random, 0, 200.f, true));
-            events.ScheduleEvent(EVENT_SHADOWBLINK, 500ms);
-            events.ScheduleEvent(EVENT_SHADOW_BOLT, 3s);
-            events.ScheduleEvent(EVENT_SHADOW_BOLT_VOLLEY, 13s, 15s);
-            events.ScheduleEvent(EVENT_FEAR, 10s, 20s);
-            events.ScheduleEvent(EVENT_SILENCE, 20s, 25s);
-            events.ScheduleEvent(EVENT_MIND_CONTROL, 30s, 35s);
-            events.ScheduleEvent(EVENT_SPAWN_ADDS, 10s);
+            //DoCast(me, SPELL_NEFARIANS_BARRIER);
+            //SetCombatMovement(false);
+            //me->SetImmuneToPC(false);
+            //AttackStart(SelectTarget(SelectTargetMethod::Random, 0, 200.f, true));
+            DoAction(888);
+            //events.ScheduleEvent(EVENT_SHADOWBLINK, 500ms);
+            //events.ScheduleEvent(EVENT_SHADOW_BOLT, 3s);
+            //events.ScheduleEvent(EVENT_SHADOW_BOLT_VOLLEY, 13s, 15s);
+            //events.ScheduleEvent(EVENT_FEAR, 10s, 20s);
+            //events.ScheduleEvent(EVENT_SILENCE, 20s, 25s);
+            //events.ScheduleEvent(EVENT_MIND_CONTROL, 30s, 35s);
+            //events.ScheduleEvent(EVENT_SPAWN_ADDS, 10s); //小怪生成
         }
 
         void SetData(uint32 type, uint32 data) override
@@ -1029,7 +1032,7 @@ class spell_class_call_handler : public SpellScript
             targets.remove_if([spellInfo](WorldObject const* target) -> bool
             {
                 Player const* player = target->ToPlayer();
-                if (!player || player->IsClass(CLASS_DEATH_KNIGHT)) // ignore all death knights from whatever spell, for some reason the condition below is not working x.x
+                if (!player || player->getClass() == CLASS_DEATH_KNIGHT) // ignore all death knights from whatever spell, for some reason the condition below is not working x.x
                 {
                     return true;
                 }
