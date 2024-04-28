@@ -68,6 +68,20 @@ void WorldSession::SendBattleGroundList(ObjectGuid guid, BattlegroundTypeId bgTy
     sBattlegroundMgr->BuildBattlegroundListPacket(&data, guid, _player, bgTypeId, 0);
     SendPacket(&data);
 }
+//eluna 加入战场钩子 需要 生物模板表190032 和生物表 5221610
+void WorldSession::DirectJoinBattleground(Player* player, BattlegroundTypeId bgTypeId)
+{
+    ObjectGuid dbtableHighGuid = ObjectGuid::Create<HighGuid::Unit>(190032, 5221610);
+    WorldPacket packetalx(CMSG_BATTLEMASTER_JOIN, 16);
+    packetalx << dbtableHighGuid; // 战场 NPC的对象ID
+    packetalx << uint32(bgTypeId); // 战歌战场
+    packetalx << uint32(0); // 实例ID
+    packetalx << uint8(0); // 加入战场的方式组队或单人
+
+    player->GetSession()->HandleBattlemasterJoinOpcode(packetalx);//向服务端发送数据
+   
+    LOG_DEBUG("network", "Player %u joined battleground queue %u directly.", player->GetGUID().GetCounter(), bgTypeId);
+}
 
 void WorldSession::HandleBattlemasterJoinOpcode(WorldPacket& recvData)
 {
@@ -82,6 +96,12 @@ void WorldSession::HandleBattlemasterJoinOpcode(WorldPacket& recvData)
     recvData >> instanceId;                                // instance id, 0 if First Available selected
     recvData >> joinAsGroup;                               // join as group
 
+    // 这里关闭了除eluna 所有的战场请求
+    if(guid.GetEntry() != 190032) {
+        ChatHandler(this).PSendSysMessage(LANG_BG_DISABLED);
+        return;
+    }
+    
     // entry not found
     if (!sBattlemasterListStore.LookupEntry(bgTypeId_))
     {

@@ -1980,6 +1980,7 @@ void Player::Regenerate(Powers power)
     }
 }
 
+
 void Player::RegenerateHealth()
 {
     uint32 curValue = GetHealth();
@@ -1988,10 +1989,11 @@ void Player::RegenerateHealth()
     if (curValue >= maxValue)
         return;
 
-    float HealthIncreaseRate = sWorld->getRate(RATE_HEALTH);
+    // 从配置文件读取全血恢复所需的总时间（以秒为单位）
+    float fullHealthTime = sConfigMgr->GetOption<int32>("FullHealthTime", 422);
 
-    if (sWorld->getBoolConfig(CONFIG_LOW_LEVEL_REGEN_BOOST) && GetLevel() < 15)
-        HealthIncreaseRate = sWorld->getRate(RATE_HEALTH) * (2.066f - (GetLevel() * 0.066f));
+    // 计算每个更新周期应该恢复的血量
+    float healthPerTick = maxValue / fullHealthTime / 1.0f; // 假设每秒调用5次（每200ms一次）
 
     float addvalue = 0.0f;
 
@@ -2001,7 +2003,7 @@ void Player::RegenerateHealth()
     // normal regen case (maybe partly in combat case)
     else if (!IsInCombat() || HasAuraType(SPELL_AURA_MOD_REGEN_DURING_COMBAT))
     {
-        addvalue = OCTRegenHPPerSpirit() * HealthIncreaseRate;
+        addvalue = OCTRegenHPPerSpirit() * sWorld->getRate(RATE_HEALTH);
 
         if (!IsStandState())
         {
@@ -2028,11 +2030,15 @@ void Player::RegenerateHealth()
     addvalue += GetTotalAuraModifier(SPELL_AURA_MOD_HEALTH_REGEN_IN_COMBAT);
     addvalue += m_baseHealthRegen / 2.5f;
 
+    // 根据配置的全血恢复时间调整回血速度
+    addvalue += healthPerTick;
+
     if (addvalue < 0)
         addvalue = 0;
 
     ModifyHealth(int32(addvalue));
 }
+
 
 void Player::ResetAllPowers()
 {

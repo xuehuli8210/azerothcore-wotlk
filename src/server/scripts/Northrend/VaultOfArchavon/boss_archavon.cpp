@@ -145,7 +145,7 @@ class boss_archavon : public CreatureScript
                     case EVENT_CHOKING_CLOUD:
                         if (Unit* target = SelectTarget(SelectTargetMethod::Random, 1))
                         {
-                            DoCast(target, RAID_MODE(SPELL_CRUSHING_LEAP_10, SPELL_CRUSHING_LEAP_25), true); //10y ~ 80y, ignore range
+                            //DoCast(target, RAID_MODE(SPELL_CRUSHING_LEAP_10, SPELL_CRUSHING_LEAP_25), true); //10y ~ 80y, ignore range
                         }
 
                         events.Repeat(30s);
@@ -156,7 +156,7 @@ class boss_archavon : public CreatureScript
                         snprintf(buffer, sizeof(buffer), "Archavon the Stone Watcher lunges for %s!", me->GetVictim()->GetName().c_str());
                         me->TextEmote(buffer);
 
-                        DoCastVictim(RAID_MODE(SPELL_STOMP_10, SPELL_STOMP_25));
+                        //DoCastVictim(RAID_MODE(SPELL_STOMP_10, SPELL_STOMP_25));  规避践踏
 
                         events.Repeat(45s);
                         events.ScheduleEvent(EVENT_IMPALE, 3s);

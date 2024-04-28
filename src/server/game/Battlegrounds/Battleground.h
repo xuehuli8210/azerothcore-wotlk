@@ -467,6 +467,8 @@ public:
     {
         EndBattleground(GetPvPTeamId(winnerTeamId));
     }
+    
+    void BattlegroundEndReward(Battleground *bg, Player *player, TeamId winnerTeamId, uint32 damageDone, uint32 healingDone);
 
     void BlockMovement(Player* player);
 

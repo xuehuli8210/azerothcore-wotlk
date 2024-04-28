@@ -47,6 +47,7 @@
 #include "World.h"
 #include "WorldPacket.h"
 #include "WorldStatePackets.h"
+#include "Config.h"
 
 namespace Acore
 {
@@ -879,6 +880,15 @@ void Battleground::EndBattleground(PvPTeamId winnerTeamId)
 
         sScriptMgr->OnBattlegroundEndReward(this, player, GetTeamId(winnerTeamId));
 
+        auto const& score = PlayerScores.find(player->GetGUID().GetCounter());
+
+        if (sConfigMgr->GetOption<bool>("Battleground.Reward.Enable", true))
+        {
+            uint32 damageDone = score->second->GetDamageDone();
+            uint32 healingDone = score->second->GetHealingDone(); 
+            BattlegroundEndReward(this, player, GetTeamId(winnerTeamId), damageDone, healingDone); 
+        }
+
         player->ResetAllPowers();
         player->CombatStopWithPets(true);
 
@@ -889,7 +899,7 @@ void Battleground::EndBattleground(PvPTeamId winnerTeamId)
         if (isBattleground() && sWorld->getBoolConfig(CONFIG_BATTLEGROUND_STORE_STATISTICS_ENABLE))
         {
             stmt = CharacterDatabase.GetPreparedStatement(CHAR_INS_PVPSTATS_PLAYER);
-            auto const& score = PlayerScores.find(player->GetGUID().GetCounter());
+           
 
             stmt->SetData(0, battlegroundId);
             stmt->SetData(1, player->GetGUID().GetCounter());
@@ -920,6 +930,43 @@ void Battleground::EndBattleground(PvPTeamId winnerTeamId)
         SpiritofCompetitionEvent(winnerTeamId);
 
     sScriptMgr->OnBattlegroundEnd(this, GetTeamId(winnerTeamId));
+}
+
+void Battleground::BattlegroundEndReward(Battleground *bg, Player *player, TeamId winnerTeamId, uint32 damageDone, uint32 healingDone) 
+{
+    TeamId bgTeamId = player->GetBgTeamId();
+    //uint32 RewardCount = 0;
+    uint32 winnerItem = 0;
+    uint32 loserItem = 0;
+
+    uint32 damageThreshold = sConfigMgr->GetOption<uint32>("Battleground.Reward.DamageThreshold", 100000);
+    uint32 healingThreshold = sConfigMgr->GetOption<uint32>("Battleground.Reward.HealingThreshold", 75000);
+
+    bool isAboveDamageThreshold = damageDone >= damageThreshold;
+    bool isAboveHealingThreshold = healingDone >= healingThreshold;
+
+    if (!bg->isArena())
+    {
+        if(isAboveDamageThreshold || isAboveHealingThreshold)
+        {
+            winnerItem = sConfigMgr->GetOption<uint32>("Battleground.Reward.Winner.ItemID", 0);
+            loserItem = sConfigMgr->GetOption<uint32>("Battleground.Reward.Loser.ItemID", 0);
+
+            if (bgTeamId == winnerTeamId && winnerItem != 0)
+            {
+                player->AddItem(winnerItem, 1);
+            }
+            else if (loserItem != 0)
+            {
+                player->AddItem(loserItem, 1);
+            }
+        }
+        else
+        {
+            std::string notification = "未达到战场奖励阈值！需要更多的伤害或治疗量！";
+            ChatHandler(player->GetSession()).SendSysMessage(notification.c_str());
+        }
+    }
 }
 
 bool Battleground::SpiritofCompetitionEvent(PvPTeamId winnerTeamId)

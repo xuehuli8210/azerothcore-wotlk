@@ -120,7 +120,7 @@ public:
             summons.Summon(summon);
         }
 
-        void DamageTaken(Unit*, uint32& damage, DamageEffectType, SpellSchoolMask) override
+        void DamageTaken(Unit*, uint32& /* damage */, DamageEffectType, SpellSchoolMask) override
         {
             //if (damage >= me->GetHealth() && Phase != PHASE_ENRAGE) //boss 直接死亡
             //    damage = 0;
@@ -338,7 +338,7 @@ public:
             shredder_timer = 4000;
         }
 
-        void DamageTaken(Unit*, uint32& damage, DamageEffectType, SpellSchoolMask) override 
+        void DamageTaken(Unit*, uint32& /* damage */, DamageEffectType, SpellSchoolMask) override 
         {
             //if (damage >= me->GetHealth())  //灵魂山猫直接死亡
             //    damage = 0;

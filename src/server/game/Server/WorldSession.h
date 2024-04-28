@@ -904,6 +904,7 @@ public:                                                 // opcodes handlers
     void HandleDismissCritter(WorldPackets::Pet::DismissCritter& dismissCritter);
 
     //Battleground
+    void DirectJoinBattleground(Player* player, BattlegroundTypeId bgTypeId); //eluna 加入战场
     void HandleBattlemasterHelloOpcode(WorldPacket& recvData);
     void HandleBattlemasterJoinOpcode(WorldPacket& recvData);
     void HandleBattlegroundPlayerPositionsOpcode(WorldPacket& recvData);

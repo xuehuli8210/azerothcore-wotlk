@@ -2388,7 +2388,39 @@ GameObject* WorldObject::SummonGameObject(uint32 entry, float x, float y, float 
     map->AddToMap(go, checkTransport);
     return go;
 }
+//新增对象对所有人可拾取
+GameObject* WorldObject::SummonGameObjectALL(uint32 entry, float x, float y, float z, float ang, float rotation0, float rotation1, float rotation2, float rotation3, uint32 respawnTime, bool checkTransport, GOSummonType /* summonType */)
+{
+    if (!IsInWorld())
+        return nullptr;
 
+    GameObjectTemplate const* goinfo = sObjectMgr->GetGameObjectTemplate(entry);
+    if (!goinfo)
+    {
+        LOG_ERROR("sql.sql", "Gameobject template {} not found in database!", entry);
+        return nullptr;
+    }
+
+    Map* map = GetMap();
+    GameObject* go = sObjectMgr->IsGameObjectStaticTransport(entry) ? new StaticTransport() : new GameObject();
+    if (!go->Create(map->GenerateLowGuid<HighGuid::GameObject>(), entry, map, GetPhaseMask(), x, y, z, ang, G3D::Quat(rotation0, rotation1, rotation2, rotation3), 100, GO_STATE_READY))
+    {
+        delete go;
+        return nullptr;
+    }
+
+    go->SetRespawnTime(respawnTime);
+
+    // Xinef: if gameobject is temporary, set custom spellid
+    if (respawnTime)
+        go->SetSpellId(1);
+
+    go->SetSpawnedByDefault(true);
+    go->SetOwnerGUID(ObjectGuid::Empty);
+
+    map->AddToMap(go, checkTransport);
+    return go;
+}
 Creature* WorldObject::SummonTrigger(float x, float y, float z, float ang, uint32 duration, bool setLevel, CreatureAI * (*GetAI)(Creature*))
 {
     TempSummonType summonType = (duration == 0) ? TEMPSUMMON_DEAD_DESPAWN : TEMPSUMMON_TIMED_DESPAWN;

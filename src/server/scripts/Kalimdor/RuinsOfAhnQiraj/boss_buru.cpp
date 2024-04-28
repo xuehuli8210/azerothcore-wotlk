@@ -19,7 +19,6 @@
 #include "ScriptedCreature.h"
 #include "SpellScript.h"
 #include "SpellScriptLoader.h"
-#include "TaskScheduler.h"
 #include "ruins_of_ahnqiraj.h"
 
 enum Emotes
@@ -189,7 +188,7 @@ struct npc_buru_egg : public ScriptedAI
     npc_buru_egg(Creature* creature) : ScriptedAI(creature)
     {
         _instance = me->GetInstanceScript();
-        SetCombatMovement(false);
+        me->SetCombatMovement(false);
         me->SetReactState(REACT_PASSIVE);
         me->SetControlled(true, UNIT_STATE_STUNNED);
     }

@@ -394,6 +394,8 @@ public: /* PlayerScript */
     bool CanGroupInvite(Player* player, std::string& membername);
     bool CanGroupAccept(Player* player, Group* group);
     bool CanSellItem(Player* player, Item* item, Creature* creature);
+    bool OnPlayerSellItem(Player* player, Item* item, Creature* creature);
+    bool OnPlayerBuybackItem(Player* player, Item* item, Creature* creature);
     bool CanSendMail(Player* player, ObjectGuid receiverGuid, ObjectGuid mailbox, std::string& subject, std::string& body, uint32 money, uint32 COD, Item* item);
     void PetitionBuy(Player* player, Creature* creature, uint32& charterid, uint32& cost, uint32& type);
     void PetitionShowList(Player* player, Creature* creature, uint32& CharterEntry, uint32& CharterDispayID, uint32& CharterCost);

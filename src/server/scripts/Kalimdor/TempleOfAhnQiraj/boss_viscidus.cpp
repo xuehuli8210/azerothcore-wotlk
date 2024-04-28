@@ -131,7 +131,7 @@ struct boss_viscidus : public BossAI
         me->RemoveAurasDueToSpell(SPELL_INVIS_SELF);
     }
 
-    void DamageTaken(Unit* attacker, uint32& damage, DamageEffectType effType, SpellSchoolMask spellSchoolMask) override
+    void DamageTaken(Unit* attacker, uint32& /* damage */, DamageEffectType effType, SpellSchoolMask spellSchoolMask) override
     {
             // 在这里添加额外的检查条件
         if (me->HealthBelowPct(1))
@@ -373,7 +373,7 @@ struct npc_toxic_slime : public ScriptedAI
 
     void InitializeAI() override
     {
-        SetCombatMovement(false);
+        me->SetCombatMovement(false);
         DoCastSelf(SPELL_TOXIN);
 
         InstanceScript* instance = me->GetInstanceScript();

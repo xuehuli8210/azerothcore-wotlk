@@ -524,6 +524,16 @@ bool ScriptMgr::CanSellItem(Player* player, Item* item, Creature* creature)
     CALL_ENABLED_BOOLEAN_HOOKS(PlayerScript, PLAYERHOOK_CAN_SELL_ITEM, !script->CanSellItem(player, item, creature));
 }
 
+bool ScriptMgr::OnPlayerSellItem(Player* player, Item* item, Creature* creature)
+{
+    CALL_ENABLED_BOOLEAN_HOOKS(PlayerScript, PLAYERHOOK_ON_SELL_ITEM, !script->OnPlayerSellItem(player, item, creature));
+}
+
+bool ScriptMgr::OnPlayerBuybackItem(Player* player, Item* item, Creature* creature)
+{
+    CALL_ENABLED_BOOLEAN_HOOKS(PlayerScript, PLAYERHOOK_ON_BUYBACK_ITEM, !script->OnPlayerBuybackItem(player, item, creature));
+}
+
 bool ScriptMgr::CanSendMail(Player* player, ObjectGuid receiverGuid, ObjectGuid mailbox, std::string& subject, std::string& body, uint32 money, uint32 COD, Item* item)
 {
     CALL_ENABLED_BOOLEAN_HOOKS(PlayerScript, PLAYERHOOK_CAN_SEND_MAIL, !script->CanSendMail(player, receiverGuid, mailbox, subject, body, money, COD, item));

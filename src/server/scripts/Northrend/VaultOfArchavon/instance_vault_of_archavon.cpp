@@ -67,7 +67,26 @@ public:
                 stoned = false;
             }
         }
+        void Update(uint32 /* diff */) override
+        {
+            // 注释或删除原有的定时器逻辑检查代码
+            // 这将阻止基于冬拥湖战斗状态的副本重置逻辑
 
+            // 保留其他不依赖于冬拥湖战斗状态的更新逻辑
+        }
+
+        bool IsEncounterInProgress() const override
+        {
+            // 修改此方法以忽略冬拥湖的战斗状态
+            for (uint8 i = 0; i < MAX_ENCOUNTER; ++i)
+                if (m_auiEncounter[i] == IN_PROGRESS)
+                    return true;
+
+            // 移除或注释掉与冬拥湖战斗状态相关的检查
+            // 不再考虑冬拥湖战斗状态对副本进程的影响
+            return false;
+        }
+        /* 关闭冬拥湖 让人随机可以进
         void Update(uint32 diff) override
         {
             checkTimer += diff;
@@ -140,7 +159,7 @@ public:
 
             return false;
         }
-
+        */
         void OnCreatureCreate(Creature* creature) override
         {
             switch (creature->GetEntry())

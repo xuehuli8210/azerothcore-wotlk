@@ -69,7 +69,7 @@ Position const SummonPosition[8] =
     {-7584.175781f, -989.6691289f, 407.199585f, 4.527447f},
 };
 
-uint32 const Entry[3] = { 12422, 12416, 12420 };
+//uint32 const Entry[3] = { 12422, 12416, 12420 };
 
 class instance_blackwing_lair : public InstanceMapScript
 {

@@ -822,8 +822,8 @@ void WorldSession::HandleSellItemOpcode(WorldPacket& recvData)
                 {
                     uint32 curDurability = pItem->GetUInt32Value(ITEM_FIELD_DURABILITY);
                     uint32 LostDurability = maxDurability - curDurability;
-
-                    if (LostDurability > 0)
+                    
+                    if (LostDurability > 0 && false) //增加false 绕过耐久度判断
                     {
                         DurabilityCostsEntry const* dcost = sDurabilityCostsStore.LookupEntry(pProto->ItemLevel);
                         if (!dcost)
@@ -895,6 +895,7 @@ void WorldSession::HandleSellItemOpcode(WorldPacket& recvData)
 
                 _player->ModifyMoney(money);
                 _player->UpdateAchievementCriteria(ACHIEVEMENT_CRITERIA_TYPE_MONEY_FROM_VENDORS, money);
+                sScriptMgr->OnPlayerSellItem(_player, pItem,creature); // 广播事件
             }
             else
                 _player->SendSellError(SELL_ERR_CANT_SELL_ITEM, creature, itemguid, 0);
@@ -927,6 +928,10 @@ void WorldSession::HandleBuybackItem(WorldPacket& recvData)
     Item* pItem = _player->GetItemFromBuyBackSlot(slot);
     if (pItem)
     {
+        if(!sScriptMgr->OnPlayerBuybackItem(_player, pItem, creature)){
+            return;
+        }
+
         uint32 price = _player->GetUInt32Value(PLAYER_FIELD_BUYBACK_PRICE_1 + slot - BUYBACK_SLOT_START);
         if (!_player->HasEnoughMoney(price))
         {
