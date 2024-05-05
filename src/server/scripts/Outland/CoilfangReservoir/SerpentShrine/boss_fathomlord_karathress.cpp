@@ -35,7 +35,7 @@ enum Talk
 enum Spells
 {
     //Fathomlord Karathress
-    SPELL_CATACLYSMIC_BOLT          = 38441,
+    SPELL_CATACLYSMIC_BOLT          = 38234,   //38441 技能伤害大改成冰霜震击
     SPELL_SEAR_NOVA                 = 38445,
     SPELL_ENRAGE                    = 24318,
     SPELL_BLESSING_OF_THE_TIDES     = 38449,
@@ -57,7 +57,7 @@ enum Spells
     //Fathomguard Caribdis
     SPELL_SUMMON_CYCLONE            = 38337,
     SPELL_WATER_BOLT_VOLLEY         = 38335,
-    SPELL_TIDAL_SURGE               = 38358,
+    SPELL_TIDAL_SURGE               = 38234,  //38358 吹风把玩家一直吹起来 改成SPELL_FROST_SHOCK = 冰霜震击
     SPELL_HEALING_WAVE              = 38330,
     SPELL_POWER_OF_CARIBDIS         = 38451,
     //Spitfire Totem

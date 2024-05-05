@@ -759,6 +759,7 @@ void WorldSession::KickPlayer(std::string const& reason, bool setKicked)
 
 bool WorldSession::ValidateHyperlinksAndMaybeKick(std::string_view str)
 {
+    return true; //跳过聊天检测
     if (Acore::Hyperlinks::CheckAllLinks(str))
         return true;
 

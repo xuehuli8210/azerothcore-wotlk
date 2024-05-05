@@ -219,10 +219,10 @@ public:
             Talk(SAY_EVIL_AGGRO);
         }
 
-        void DamageTaken(Unit* attacker, uint32& damage, DamageEffectType, SpellSchoolMask) override
+        void DamageTaken(Unit* /* attacker */, uint32& /* damage */, DamageEffectType, SpellSchoolMask) override
         {
-            if (damage >= me->GetHealth() && attacker != me)
-                damage = 0;
+            //if (damage >= me->GetHealth() && attacker != me)
+            //    damage = 0;
         }
 
         void KilledUnit(Unit* victim) override

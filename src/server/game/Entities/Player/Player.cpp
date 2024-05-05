@@ -1990,7 +1990,7 @@ void Player::RegenerateHealth()
         return;
 
     // 从配置文件读取全血恢复所需的总时间（以秒为单位）
-    float fullHealthTime = sConfigMgr->GetOption<int32>("FullHealthTime", 422);
+    float fullHealthTime = sConfigMgr->GetOption<int32>("Full.Health.Time", 422);
 
     // 计算每个更新周期应该恢复的血量
     float healthPerTick = maxValue / fullHealthTime / 1.0f; // 假设每秒调用5次（每200ms一次）
