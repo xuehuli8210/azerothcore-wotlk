@@ -38,7 +38,7 @@ enum Spells
     SPELL_BLASTWAVE         = 23331,
     SPELL_MORTALSTRIKE      = 24573,
     SPELL_KNOCKBACK         = 25778,
-    SPELL_SUPPRESSION_AURA  = 1266 // Suppression Device Spell 22247  修改成魔法抑制
+    SPELL_SUPPRESSION_AURA  = 1266 // Suppression Device Spell 22247  这里是黑翼木桩的魔法抑制
 };
 
 enum Events

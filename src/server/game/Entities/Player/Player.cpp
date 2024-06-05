@@ -170,6 +170,7 @@ Player::Player(WorldSession* session): Unit(true), m_mover(this)
     m_usedTalentCount = 0;
     m_questRewardTalentCount = 0;
     m_extraBonusTalentCount = 0;
+    m_primaryProfessions = 0;
 
     m_regenTimer = 0;
     m_regenTimerCount = 0;
@@ -3386,7 +3387,7 @@ void Player::removeSpell(uint32 spell_id, uint8 removeSpecMask, bool onlyTempora
     if (spellInfo->IsPrimaryProfessionFirstRank())
     {
         uint32 freeProfs = GetFreePrimaryProfessionPoints() + 1;
-        if (freeProfs <= sWorld->getIntConfig(CONFIG_MAX_PRIMARY_TRADE_SKILL))
+        if (freeProfs <= sWorld->getIntConfig(CONFIG_MAX_PRIMARY_TRADE_SKILL) + m_primaryProfessions)
             SetFreePrimaryProfessions(freeProfs);
     }
 
@@ -6003,7 +6004,10 @@ void Player::RewardExtraBonusTalentPoints(uint32 bonusTalentPoints)
         m_extraBonusTalentCount += bonusTalentPoints;
     }
 }
-
+uint32 Player::GetExtraBonusTalentCount()
+{
+    return m_extraBonusTalentCount;
+}
 ///Calculate the amount of honor gained based on the victim
 ///and the size of the group for which the honor is divided
 ///An exact honor value can also be given (overriding the calcs)
@@ -11459,9 +11463,12 @@ bool Player::IsVisibleGloballyFor(Player const* u) const
 
 void Player::InitPrimaryProfessions()
 {
-    SetFreePrimaryProfessions(sWorld->getIntConfig(CONFIG_MAX_PRIMARY_TRADE_SKILL));
+    SetFreePrimaryProfessions(sWorld->getIntConfig(CONFIG_MAX_PRIMARY_TRADE_SKILL) + m_primaryProfessions);
 }
-
+void Player::AddPrimaryProfessions()
+{
+    SetFreePrimaryProfessions(1);
+}
 bool Player::ModifyMoney(int32 amount, bool sendError /*= true*/)
 {
     if (!amount)
@@ -14749,6 +14756,7 @@ void Player::_SaveCharacter(bool create, CharacterDatabaseTransaction trans)
         stmt->SetData(index++, m_grantableLevels);
         stmt->SetData(index++, _innTriggerId);
         stmt->SetData(index++, m_extraBonusTalentCount);
+        stmt->SetData(index++, m_primaryProfessions);
     }
     else
     {
@@ -14891,8 +14899,10 @@ void Player::_SaveCharacter(bool create, CharacterDatabaseTransaction trans)
         stmt->SetData(index++, m_extraBonusTalentCount);
 
         stmt->SetData(index++, IsInWorld() && !GetSession()->PlayerLogout() ? 1 : 0);
+        stmt->SetData(index++, m_primaryProfessions);
         // Index
         stmt->SetData(index++, GetGUID().GetCounter());
+        
     }
 
     trans->Append(stmt);

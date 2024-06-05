@@ -107,6 +107,7 @@ struct boss_ayamiss : public BossAI
     {
         switch (who->GetEntry())
         {
+            /*
             case NPC_HIVEZARA_SWARMER:
                 who->CastSpell(who, SPELL_HIVEZARA_SWARMER_TELEPORT_TRIGGER, true);
                 _swarmers.push_back(who->GetGUID());
@@ -114,6 +115,7 @@ struct boss_ayamiss : public BossAI
             case NPC_HIVEZARA_LARVA:
                 who->GetMotionMaster()->MovePoint(POINT_PARALYZE, AltarPos);
                 break;
+            */
         }
 
         summons.Summon(who);
@@ -170,6 +172,7 @@ struct boss_ayamiss : public BossAI
 
             context.Repeat(RAND(2400ms, 3600ms));
         }).Schedule(15s, 28s, [this](TaskContext context) {
+            /*
             if (Unit* target = SelectTarget(SelectTargetMethod::Random, 0, 0, true))
             {
                 DoCast(target, SPELL_PARALYZE, true);
@@ -177,6 +180,7 @@ struct boss_ayamiss : public BossAI
                 DoCastAOE(RAND(SPELL_SUMMON_LARVA_A, SPELL_SUMMON_LARVA_B), true);
             }
             context.Repeat();
+            */
         });
     }
 
@@ -215,9 +219,9 @@ struct boss_ayamiss : public BossAI
     void JustEngagedWith(Unit* attacker) override
     {
         BossAI::JustEngagedWith(attacker);
-        me->SetCanFly(true);
-        me->SetDisableGravity(true);
-        me->GetMotionMaster()->MovePoint(POINT_AIR, AyamissAirPos);
+        //me->SetCanFly(true);  //boss飞行
+        //me->SetDisableGravity(true);  //无需重力
+        //me->GetMotionMaster()->MovePoint(POINT_AIR, AyamissAirPos); //飞行到指定地点
         ScheduleTasks();
     }
 

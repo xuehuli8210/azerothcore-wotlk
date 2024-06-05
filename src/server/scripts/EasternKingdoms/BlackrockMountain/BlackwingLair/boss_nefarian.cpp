@@ -131,10 +131,10 @@ enum Spells
     SPELL_VAELASTRASZZ_SPAWN        = 16354, // Self Cast Depawn one sec after
     // BWL Spells
     SPELL_SHADOWBOLT                = 22677,
-    SPELL_SHADOWBOLT_VOLLEY         = 22665,
+    SPELL_SHADOWBOLT_VOLLEY         = 22665, //多暗影箭
     SPELL_SILENCE                   = 22666,
-    SPELL_SHADOW_COMMAND            = 22667,
-    SPELL_FEAR                      = 22678,
+    SPELL_SHADOW_COMMAND            = 22665,
+    SPELL_FEAR                      = 22665,
     SPELL_SHADOWBLINK               = 22664,
 
     SPELL_NEFARIANS_BARRIER         = 22663,

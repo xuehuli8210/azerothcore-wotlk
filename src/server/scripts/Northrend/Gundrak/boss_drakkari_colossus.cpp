@@ -145,8 +145,8 @@ public:
         {
             BossAI::JustEngagedWith(who);
             events.ScheduleEvent(EVENT_COLOSSUS_MIGHTY_BLOW, 10s);
-            events.ScheduleEvent(EVENT_COLOSSUS_HEALTH_1, 1s);
-            events.ScheduleEvent(EVENT_COLOSSUS_HEALTH_2, 1s);
+            //events.ScheduleEvent(EVENT_COLOSSUS_HEALTH_1, 1s); 放弃水人召唤
+            //events.ScheduleEvent(EVENT_COLOSSUS_HEALTH_2, 1s);放弃水人召唤
         }
 
         void JustSummoned(Creature* summon) override
@@ -170,8 +170,13 @@ public:
         void SummonedCreatureDies(Creature* summon, Unit*) override
         {
             summons.Despawn(summon);
-            if (summon->GetEntry() == NPC_DRAKKARI_ELEMENTAL)
-                me->KillSelf();
+            if (summon->GetEntry() == NPC_DRAKKARI_ELEMENTAL){
+                me->RemoveUnitFlag(UNIT_FLAG_NON_ATTACKABLE);
+                me->RemoveAurasDueToSpell(SPELL_FREEZE_ANIM);
+                if (me->GetVictim())
+                    me->GetMotionMaster()->MoveChase(me->GetVictim());
+            }
+              
         }
 
         void SummonedCreatureDespawn(Creature* summon) override
@@ -188,8 +193,10 @@ public:
 
         void DamageTaken(Unit*  /*attacker*/, uint32& damage, DamageEffectType, SpellSchoolMask) override
         {
-            if (damage >= me->GetHealth())
-                damage = 0;
+            if (damage >= me->GetHealth()){
+                
+            }
+            //    damage = 0;
         }
 
         void UpdateAI(uint32 diff) override

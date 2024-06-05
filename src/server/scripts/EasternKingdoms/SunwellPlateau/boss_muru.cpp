@@ -290,7 +290,7 @@ public:
             me->CastSpell(me, SPELL_BLACK_HOLE_SUMMON_VISUAL, true);
             me->CastSpell(me, SPELL_BLACK_HOLE_SUMMON_VISUAL2, true);
             events.ScheduleEvent(EVENT_START_BLACK_HOLE, 3500);
-            events.ScheduleEvent(EVENT_SWITCH_BLACK_HOLE_TARGET, 5000);
+            events.ScheduleEvent(EVENT_SWITCH_BLACK_HOLE_TARGET, 120000);
             events.ScheduleEvent(EVENT_SINGULARITY_DEATH, 17000);
         }
 
@@ -315,7 +315,8 @@ public:
                                 if (me->GetDistance2d(player) < 15.0f && player->GetPositionZ() < 72.0f && player->IsAlive() && !player->HasAura(SPELL_BLACK_HOLE_EFFECT))
                                 {
                                     me->GetMotionMaster()->MovePoint(0, player->GetPositionX(), player->GetPositionY(), player->GetPositionZ(), false, true);
-                                    events.ScheduleEvent(EVENT_SWITCH_BLACK_HOLE_TARGET, 5000);
+                                    events.ScheduleEvent(EVENT_SWITCH_BLACK_HOLE_TARGET, 120000);
+                                    //修改boss 改成2分钟触发一次
                                     return;
                                 }
                         events.ScheduleEvent(EVENT_SWITCH_BLACK_HOLE_TARGET, 500);

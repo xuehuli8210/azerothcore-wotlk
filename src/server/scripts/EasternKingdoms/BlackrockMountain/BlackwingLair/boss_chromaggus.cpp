@@ -184,18 +184,19 @@ public:
                             {
                                 Acore::Containers::RandomResize(playerTargets, 12);
                             }
-
+                            /*
                             for (Player* player : playerTargets)
                             {
                                 DoCast(player, afflictionSpellID, true);
-                                /*
+                               
                                 if (player->HasAura(SPELL_BROODAF_BLUE) && player->HasAura(SPELL_BROODAF_BLACK) && player->HasAura(SPELL_BROODAF_RED) &&
                                     player->HasAura(SPELL_BROODAF_BRONZE) && player->HasAura(SPELL_BROODAF_GREEN))
                                 {
                                     DoCast(player, SPELL_CHROMATIC_MUT_1);
                                 }
-                                */
+                                
                             }
+                            */
                         }
                         events.ScheduleEvent(EVENT_AFFLICTION, 10s);
                         break;

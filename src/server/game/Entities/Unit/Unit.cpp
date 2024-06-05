@@ -1962,6 +1962,10 @@ void Unit::DealMeleeDamage(CalcDamageInfo* damageInfo, bool durabilityLoss)
 
             Unit::DealDamageMods(this, damage, &absorb);
 
+            
+            sScriptMgr->ModifyMeleeDamage(this, victim, damage); //增加反弹伤害钩子
+            
+
             /// @todo: Move this to a packet handler
             WorldPacket data(SMSG_SPELLDAMAGESHIELD, (8 + 8 + 4 + 4 + 4 + 4));
             data << victim->GetGUID();

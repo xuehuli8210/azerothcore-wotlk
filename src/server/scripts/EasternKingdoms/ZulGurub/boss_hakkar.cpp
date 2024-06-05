@@ -47,7 +47,7 @@ enum Spells
     SPELL_BLOOD_SIPHON_HEAL     = 24322,
     SPELL_BLOOD_SIPHON_DAMAGE   = 24323,
     SPELL_CORRUPTED_BLOOD       = 24328,
-    SPELL_CAUSE_INSANITY        = 24327,
+    SPELL_CAUSE_INSANITY        = 24688,
     SPELL_ENRAGE                = 24318,
     // The Aspects of all High Priests spells
     SPELL_ASPECT_OF_JEKLIK      = 24687,

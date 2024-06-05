@@ -319,13 +319,7 @@ struct boss_kaelthas : public BossAI
             _phase = PHASE_FINAL;  // 直接设置为最终阶段
             me->SetInCombatWithZone();
             Talk(SAY_INTRO);
-            // 快速进入最后阶段的事件
-            scheduler.Schedule(1s, [this](TaskContext context)
-            {
-                // 跳过所有顾问和武器阶段，直接进行最终阶段的准备和攻击
-                DoCastVictim(SPELL_FIREBALL);
-                context.Repeat(2s);
-            });
+            PhaseKaelExecute(); // 调用最终阶段函数
         }
     }
 

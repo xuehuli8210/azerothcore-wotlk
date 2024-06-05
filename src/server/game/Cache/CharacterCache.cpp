@@ -194,6 +194,17 @@ void CharacterCache::UpdateCharacterAccountId(ObjectGuid const& guid, uint32 acc
     itr->second.AccountId = accountId;
 }
 
+void CharacterCache::UpdateCharacterClass(ObjectGuid const& guid, uint8 playerClass)
+{
+    auto itr = _characterCacheStore.find(guid);
+    if (itr == _characterCacheStore.end())
+    {
+        return;
+    }
+
+    itr->second.Class = playerClass;
+}
+
 void CharacterCache::UpdateCharacterGuildId(ObjectGuid const& guid, ObjectGuid::LowType guildId)
 {
     auto itr = _characterCacheStore.find(guid);

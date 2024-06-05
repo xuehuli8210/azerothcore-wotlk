@@ -54,6 +54,7 @@ class AC_GAME_API CharacterCache
 
         void UpdateCharacterData(ObjectGuid const& guid, std::string const& name, Optional<uint8> gender = {}, Optional<uint8> race = {});
         void UpdateCharacterLevel(ObjectGuid const& guid, uint8 level);
+        void UpdateCharacterClass(ObjectGuid const& guid, uint8 playerClass);
         void UpdateCharacterAccountId(ObjectGuid const& guid, uint32 accountId);
         void UpdateCharacterGuildId(ObjectGuid const& guid, ObjectGuid::LowType guildId);
         void UpdateCharacterArenaTeamId(ObjectGuid const& guid, uint8 slot, uint32 arenaTeamId);

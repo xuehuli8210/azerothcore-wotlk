@@ -1748,7 +1748,7 @@ public:
     [[nodiscard]] uint32 GetFreePrimaryProfessionPoints() const { return GetUInt32Value(PLAYER_CHARACTER_POINTS2); }
     void SetFreePrimaryProfessions(uint16 profs) { SetUInt32Value(PLAYER_CHARACTER_POINTS2, profs); }
     void InitPrimaryProfessions();
-
+    void AddPrimaryProfessions();
     [[nodiscard]] PlayerSpellMap const& GetSpellMap() const { return m_spells; }
     PlayerSpellMap&       GetSpellMap()       { return m_spells; }
 
@@ -2120,6 +2120,7 @@ public:
      * 2). Data initing situation (like PlayerScript:OnLoadFromDB)
      */
     void RewardExtraBonusTalentPoints(uint32 bonusTalentPoints);
+    uint32 GetExtraBonusTalentCount();
 
     /*********************************************************/
     /***                  PVP SYSTEM                       ***/
@@ -2610,6 +2611,10 @@ public:
 
     std::string GetDebugInfo() const override;
 
+        //返回商业功能
+    [[nodiscard]] bool HasPrimaryProfessions() const { return m_primaryProfessions; }
+    void SetPrimaryProfessions(bool setting) { m_primaryProfessions = setting; }
+
  protected:
     // Gamemaster whisper whitelist
     WhisperListContainer WhisperList;
@@ -2851,7 +2856,7 @@ public:
     uint32 m_usedTalentCount;
     uint32 m_questRewardTalentCount;
     uint32 m_extraBonusTalentCount;
-
+    uint32 m_primaryProfessions;
     // Social
     PlayerSocial* m_social;
 
@@ -2910,6 +2915,8 @@ private:
     void SetMustDelayTeleport(bool setting) { m_bMustDelayTeleport = setting; }
     [[nodiscard]] bool HasDelayedTeleport() const { return m_bHasDelayedTeleport; }
     void SetHasDelayedTeleport(bool setting) { m_bHasDelayedTeleport = setting; }
+
+
 
     MapReference m_mapRef;
 
