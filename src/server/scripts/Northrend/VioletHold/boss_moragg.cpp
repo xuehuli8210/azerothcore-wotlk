@@ -74,7 +74,7 @@ public:
         void JustEngagedWith(Unit* /*who*/) override
         {
             DoZoneInCombat();
-            me->CastSpell(me, SPELL_RAY_OF_SUFFERING, true);
+           // me->CastSpell(me, SPELL_RAY_OF_SUFFERING, true);
             me->CastSpell(me, SPELL_RAY_OF_PAIN, true);
             events.Reset();
             events.RescheduleEvent(EVENT_SPELL_CORROSIVE_SALIVA, 4s, 6s);

@@ -1928,6 +1928,7 @@ public:
     void UpdateShieldBlockValue();
     void ApplySpellPowerBonus(int32 amount, bool apply);
     void UpdateSpellDamageAndHealingBonus();
+    int32 BaseRatingValue();
     void ApplyRatingMod(CombatRating cr, int32 value, bool apply);
     void UpdateRating(CombatRating cr);
     void UpdateAllRatings();

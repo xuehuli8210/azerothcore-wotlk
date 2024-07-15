@@ -355,6 +355,7 @@ public: /* PlayerScript */
     void OnAfterPlayerSetVisibleItemSlot(Player* player, uint8 slot, Item* item);
     void OnAfterPlayerMoveItemFromInventory(Player* player, Item* it, uint8 bag, uint8 slot, bool update);
     void OnEquip(Player* player, Item* it, uint8 bag, uint8 slot, bool update);
+    void OnUnEquip(Player* player, Item* it);
     void OnPlayerJoinBG(Player* player);
     void OnPlayerJoinArena(Player* player);
     void GetCustomGetArenaTeamId(Player const* player, uint8 slot, uint32& teamID) const;

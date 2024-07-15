@@ -105,8 +105,8 @@ bool VendorItemData::RemoveItem(uint32 item_id)
     return found;
 }
 
-VendorItemCount::VendorItemCount(uint32 _item, uint32 _count)
-    : itemId(_item), count(_count), lastIncrementTime(GameTime::GetGameTime().count()) { }
+VendorItemCount::VendorItemCount(ObjectGuid _playerGuid, uint32 _item, uint32 _count)
+    : playerGuid(_playerGuid), itemId(_item), count(_count), lastIncrementTime(GameTime::GetGameTime().count()) { }
 
 VendorItem const* VendorItemData::FindItemCostPair(uint32 item_id, uint32 extendedCost) const
 {
@@ -2970,14 +2970,15 @@ VendorItemData const* Creature::GetVendorItems() const
     return sObjectMgr->GetNpcVendorItemList(GetEntry());
 }
 
-uint32 Creature::GetVendorItemCurrentCount(VendorItem const* vItem)
+uint32 Creature::GetVendorItemCurrentCount(Player* player, VendorItem const* vItem)
 {
     if (!vItem->maxcount)
         return vItem->maxcount;
 
+    ObjectGuid playerGuid = player->GetGUID();
     VendorItemCounts::iterator itr = m_vendorItemCounts.begin();
     for (; itr != m_vendorItemCounts.end(); ++itr)
-        if (itr->itemId == vItem->item)
+        if (itr->playerGuid == playerGuid && itr->itemId == vItem->item)
             break;
 
     if (itr == m_vendorItemCounts.end())
@@ -3005,20 +3006,22 @@ uint32 Creature::GetVendorItemCurrentCount(VendorItem const* vItem)
     return vCount->count;
 }
 
-uint32 Creature::UpdateVendorItemCurrentCount(VendorItem const* vItem, uint32 used_count)
+
+uint32 Creature::UpdateVendorItemCurrentCount(Player* player, VendorItem const* vItem, uint32 used_count)
 {
     if (!vItem->maxcount)
         return 0;
 
+    ObjectGuid playerGuid = player->GetGUID();
     VendorItemCounts::iterator itr = m_vendorItemCounts.begin();
     for (; itr != m_vendorItemCounts.end(); ++itr)
-        if (itr->itemId == vItem->item)
+        if (itr->playerGuid == playerGuid && itr->itemId == vItem->item)
             break;
 
     if (itr == m_vendorItemCounts.end())
     {
         uint32 new_count = vItem->maxcount > used_count ? vItem->maxcount - used_count : 0;
-        m_vendorItemCounts.push_back(VendorItemCount(vItem->item, new_count));
+        m_vendorItemCounts.push_back(VendorItemCount(playerGuid, vItem->item, new_count));
         return new_count;
     }
 
@@ -3041,6 +3044,7 @@ uint32 Creature::UpdateVendorItemCurrentCount(VendorItem const* vItem, uint32 us
     vCount->lastIncrementTime = ptime;
     return vCount->count;
 }
+
 
 TrainerSpellData const* Creature::GetTrainerSpells() const
 {

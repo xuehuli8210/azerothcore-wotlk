@@ -827,6 +827,8 @@ public:                                                 // opcodes handlers
     void HandleQuestgiverHelloOpcode(WorldPacket& recvPacket);
     void HandleQuestgiverAcceptQuestOpcode(WorldPacket& recvPacket);
     void HandleQuestgiverQueryQuestOpcode(WorldPacket& recvPacket);
+    void HandleQuestDetails(Player* player, Quest const* quest);
+
     void HandleQuestgiverChooseRewardOpcode(WorldPacket& recvPacket);
     void HandleQuestgiverRequestRewardOpcode(WorldPacket& recvPacket);
     void HandleQuestQueryOpcode(WorldPacket& recvPacket);

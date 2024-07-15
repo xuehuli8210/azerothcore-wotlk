@@ -1513,12 +1513,15 @@ void Aura::HandleAuraSpecificMods(AuraApplication const* aurApp, Unit* caster, b
                 else if (m_spellInfo->SpellFamilyFlags[0] & 0x1 && m_spellInfo->SpellFamilyFlags[2] & 0x400 && GetEffect(0))
                 {
                     // Glyph of Power Word: Shield
-                    if (AuraEffect* glyph = caster->GetAuraEffect(55672, 0))
-                    {
-                        // instantly heal m_amount% of the absorb-value
-                        int32 heal = glyph->GetAmount() * GetEffect(0)->GetAmount() / 100;
-                        caster->CastCustomSpell(GetUnitOwner(), 56160, &heal, nullptr, nullptr, true, 0, GetEffect(0));
+                    if(false){
+                        if (AuraEffect* glyph = caster->GetAuraEffect(55672, 0))
+                        {
+                            // instantly heal m_amount% of the absorb-value
+                            int32 heal = glyph->GetAmount() * GetEffect(0)->GetAmount() / 100;
+                            caster->CastCustomSpell(GetUnitOwner(), 56160, &heal, nullptr, nullptr, true, 0, GetEffect(0));
+                        }
                     }
+                   
                 }
                 break;
             case SPELLFAMILY_ROGUE:

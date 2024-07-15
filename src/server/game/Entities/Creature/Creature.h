@@ -191,8 +191,8 @@ public:
     float GetSpellDamageMod(int32 Rank);
 
     [[nodiscard]] VendorItemData const* GetVendorItems() const;
-    uint32 GetVendorItemCurrentCount(VendorItem const* vItem);
-    uint32 UpdateVendorItemCurrentCount(VendorItem const* vItem, uint32 used_count);
+    uint32 GetVendorItemCurrentCount(Player* player,VendorItem const* vItem);
+    uint32 UpdateVendorItemCurrentCount(Player* player,VendorItem const* vItem, uint32 used_count);
 
     [[nodiscard]] TrainerSpellData const* GetTrainerSpells() const;
 

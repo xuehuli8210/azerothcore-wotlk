@@ -91,6 +91,7 @@ enum PlayerHook
     PLAYERHOOK_ON_AFTER_SET_VISIBLE_ITEM_SLOT,
     PLAYERHOOK_ON_AFTER_MOVE_ITEM_FROM_INVENTORY,
     PLAYERHOOK_ON_EQUIP,
+    PLAYERHOOK_ON_UNEQUIP,
     PLAYERHOOK_ON_PLAYER_JOIN_BG,
     PLAYERHOOK_ON_PLAYER_JOIN_ARENA,
     PLAYERHOOK_GET_CUSTOM_GET_ARENA_TEAM_ID,
@@ -393,6 +394,9 @@ public:
 
     // After an item has been equipped
     virtual void OnEquip(Player* /*player*/, Item* /*it*/, uint8 /*bag*/, uint8 /*slot*/, bool /*update*/) { }
+
+    // After an item has been equipped
+    virtual void OnUnEquip(Player* /*player*/, Item* /*it*/) { }
 
     // After player enters queue for BG
     virtual void OnPlayerJoinBG(Player* /*player*/) { }

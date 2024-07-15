@@ -5204,6 +5204,16 @@ float Player::OCTRegenMPPerSpirit()
     float regen     = spirit * moreRatio->ratio;
     return regen;
 }
+int32 Player::BaseRatingValue()
+{
+    // 获取三个属性的值
+    int32 meleeHaste = m_baseRatingValue[CR_HASTE_MELEE];
+    int32 rangedHaste = m_baseRatingValue[CR_HASTE_RANGED];
+    int32 spellHaste = m_baseRatingValue[CR_HASTE_SPELL];
+
+    // 返回三个值中的最大值
+    return std::max({meleeHaste, rangedHaste, spellHaste});
+}
 
 void Player::ApplyRatingMod(CombatRating cr, int32 value, bool apply)
 {
@@ -10633,7 +10643,7 @@ inline bool Player::_StoreOrEquipNewItem(uint32 vendorslot, uint32 item, uint8 c
     Item* it = bStore ? StoreNewItem(vDest, item, true) : EquipNewItem(uiDest, item, true);
     if (it)
     {
-        uint32 new_count = pVendor->UpdateVendorItemCurrentCount(crItem, pProto->BuyCount * count);
+        uint32 new_count = pVendor->UpdateVendorItemCurrentCount(this,crItem, pProto->BuyCount * count);
 
         WorldPacket data(SMSG_BUY_ITEM, (8 + 4 + 4 + 4));
         data << pVendor->GetGUID();
@@ -10739,7 +10749,7 @@ bool Player::BuyItemFromVendorSlot(ObjectGuid vendorguid, uint32 vendorslot, uin
     // check current item amount if it limited
     if (crItem->maxcount != 0)
     {
-        if (creature->GetVendorItemCurrentCount(crItem) < pProto->BuyCount * count)
+        if (creature->GetVendorItemCurrentCount(this,crItem) < pProto->BuyCount * count)
         {
             SendBuyError(BUY_ERR_ITEM_ALREADY_SOLD, creature, item, 0);
             return false;
@@ -13332,8 +13342,24 @@ uint32 Player::GetRuneBaseCooldown(uint8 index, bool skipGrace)
             cooldown = cooldown * (100 - (*i)->GetAmount()) / 100;
     }
 
+    // 直接判断三个光环是否存在并修改冷却时间
+
+    if (HasAura(103018)) // 替换为具体的光环ID 1
+    {
+        cooldown = static_cast<uint32>(cooldown * 0.80); // 减少 20%
+    }
+    else if (HasAura(103016)) // 替换为具体的光环ID 2
+    {
+        cooldown = static_cast<uint32>(cooldown * 0.60); // 减少 40%
+    }
+    else if (HasAura(103014)) // 替换为具体的光环ID 3
+    {
+        cooldown = static_cast<uint32>(cooldown * 0.40); // 减少 60%
+    }
+
     return cooldown;
 }
+
 
 void Player::RemoveRunesByAuraEffect(AuraEffect const* aura)
 {

@@ -2940,6 +2940,8 @@ void Player::RemoveItem(uint8 bag, uint8 slot, bool update, bool swap)
                 if (pProto && pProto->ItemSet)
                     RemoveItemsSetItem(this, pProto);
 
+                sScriptMgr->OnUnEquip(this, pItem);
+
                 _ApplyItemMods(pItem, slot, false);
             }
 
@@ -3085,7 +3087,8 @@ void Player::DestroyItem(uint8 bag, uint8 slot, bool update)
                 // item set bonuses applied only at equip and removed at unequip, and still active for broken items
                 if (pProto && pProto->ItemSet)
                     RemoveItemsSetItem(this, pProto);
-
+                    
+                sScriptMgr->OnUnEquip(this, pItem);
                 _ApplyItemMods(pItem, slot, false);
             }
 
