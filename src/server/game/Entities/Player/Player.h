@@ -1067,6 +1067,10 @@ class Player : public Unit, public GridObject<Player>
     friend void Item::AddToUpdateQueueOf(Player* player);
     friend void Item::RemoveFromUpdateQueueOf(Player* player);
 public:
+    //假人
+    bool IsFaker;
+    uint32 FakerMoveTimer;
+    
     explicit Player(WorldSession* session);
     ~Player() override;
 

@@ -17,10 +17,16 @@
 
 // This is where scripts' loading functions should be declared:
 // void MyExampleScript()
+#include "./Faker/Faker.h"
+#include "./FakePlayers/FakePlayers.h"
+
+void AddSC_FakePlayerScript();
+void AddSC_FakerLogin();
 
 // The name of this function should match:
 // void Add${NameOfDirectory}Scripts()
 void AddCustomScripts()
 {
-    // MyExampleScript()
+    AddSC_FakerLogin();
+    AddSC_FakePlayerScript();
 }

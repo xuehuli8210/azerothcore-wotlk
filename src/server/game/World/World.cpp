@@ -95,7 +95,7 @@
 #include "WorldSession.h"
 #include <boost/asio/ip/address.hpp>
 #include <cmath>
-
+#include "../../scripts/Custom/Faker/Faker.h"
 namespace
 {
     TaskScheduler playersSaveScheduler;
@@ -1485,6 +1485,7 @@ void World::LoadConfigSettings(bool reload)
 /// Initialize the World
 void World::SetInitialWorldSettings()
 {
+
     ///- Server startup begin
     uint32 startupBegin = getMSTime();
 
@@ -1524,6 +1525,7 @@ void World::SetInitialWorldSettings()
             exit(1);
         }
     }
+
 
     ///- Initialize pool manager
     sPoolMgr->Initialize();
@@ -2148,7 +2150,8 @@ void World::SetInitialWorldSettings()
 
     LOG_INFO("server.loading", "Load Channels...");
     ChannelMgr::LoadChannels();
-
+    
+    sFaker->Load();//追加
     sScriptMgr->OnBeforeWorldInitialized();
 
     if (sWorld->getBoolConfig(CONFIG_PRELOAD_ALL_NON_INSTANCED_MAP_GRIDS))
@@ -2865,6 +2868,8 @@ void World::SendServerMessage(ServerMessageType messageID, std::string stringPar
 
 void World::UpdateSessions(uint32 diff)
 {
+    sFaker->UpdateAllSessions(diff);//追加
+
     {
         METRIC_DETAILED_NO_THRESHOLD_TIMER("world_update_time",
             METRIC_TAG("type", "Add sessions"),

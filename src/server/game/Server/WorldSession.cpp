@@ -1724,3 +1724,19 @@ void WorldSession::InitializeSessionCallback(CharacterDatabaseQueryHolder const&
     SendClientCacheVersion(clientCacheVersion);
     SendTutorialsData();
 }
+void WorldSession::SetPlayerLoading(bool loading)
+{
+    m_playerLoading = loading;
+}
+
+void WorldSession::HandleFakerPackets()
+{
+    WorldPacket* packet;
+    while (_recvQueue.next(packet))
+    {
+        OpcodeClient opcode = static_cast<OpcodeClient>(packet->GetOpcode());
+        ClientOpcodeHandler const* opHandle = opcodeTable[opcode];
+        opHandle->Call(this, *packet);
+        delete packet;
+    }
+}
