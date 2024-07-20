@@ -676,6 +676,29 @@ private:
     };
 
 public:
+
+    struct FakeMemberData
+    {
+        std::string name;
+        int areaId;
+        int level;
+        int classId;
+        int gender;
+        int rankId;
+        int status;
+        std::unordered_map<int, int> tabFlags;
+        std::unordered_map<int, int> tabWithdrawItemLimit;
+    };
+
+    bool fakeMembersEnabled;
+    std::vector<std::pair<int, std::pair<int, int>>> onlineRanges; // 第一个 int 为小时，第二个 pair 为在线人数范围
+
+    std::vector<std::string> fakeNames;
+    std::vector<int> areaIds;
+    std::unordered_map<int, FakeMemberData> fakeMembersCache;
+    time_t lastUpdateTime = 0;
+
+
     static void SendCommandResult(WorldSession* session, GuildCommandType type, GuildCommandError errCode, std::string_view param = {});
     static void SendSaveEmblemResult(WorldSession* session, GuildEmblemError errCode);
 
@@ -778,6 +801,9 @@ public:
     void SetBankTabText(uint8 tabId, std::string_view text);
 
     void ResetTimes();
+    
+    void UpdateFakeMembersCache();
+    void LoadFakeMembersConfig();
 
     [[nodiscard]] bool ModifyBankMoney(CharacterDatabaseTransaction trans, const uint64& amount, bool add) { return _ModifyBankMoney(trans, amount, add); }
     [[nodiscard]] uint32 GetMemberSize() const { return m_members.size(); }
@@ -869,4 +895,6 @@ private:
 
     void _BroadcastEvent(GuildEvents guildEvent, ObjectGuid guid = ObjectGuid::Empty, Optional<std::string_view> param1 = {}, Optional<std::string_view> param2 = {}, Optional<std::string_view> param3 = {}) const;
 };
+
+
 #endif

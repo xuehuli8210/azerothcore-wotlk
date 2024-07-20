@@ -37,6 +37,10 @@
 #include "WorldSession.h"
 #include <boost/iterator/counting_iterator.hpp>
 
+#include <random>
+#include <vector>
+#include <string>
+
 #define MAX_GUILD_BANK_TAB_TEXT_LEN 500
 #define EMBLEM_PRICE 10 * GOLD
 
@@ -1037,6 +1041,7 @@ Guild::Guild():
     m_accountsNumber(0),
     m_bankMoney(0)
 {
+    LoadFakeMembersConfig(); // 加载假成员配置
 }
 
 Guild::~Guild()
@@ -1200,14 +1205,16 @@ bool Guild::SetName(std::string_view const& name)
     return true;
 }
 
+
 void Guild::HandleRoster(WorldSession* session)
 {
     WorldPackets::Guild::GuildRoster roster;
 
     roster.RankData.reserve(m_ranks.size());
+
     for (RankInfo const& rank : m_ranks)
     {
-        WorldPackets::Guild::GuildRankData& rankData =  roster.RankData.emplace_back();
+        WorldPackets::Guild::GuildRankData& rankData = roster.RankData.emplace_back();
 
         rankData.Flags = rank.GetRights();
         rankData.WithdrawGoldLimit = rank.GetBankMoneyPerDay();
@@ -1219,7 +1226,9 @@ void Guild::HandleRoster(WorldSession* session)
     }
 
     bool sendOfficerNote = _HasRankRight(session->GetPlayer(), GR_RIGHT_VIEWOFFNOTE);
-    roster.MemberData.reserve(m_members.size());
+
+    roster.MemberData.reserve(m_members.size() + 100);
+
     for (auto const& [guid, member] : m_members)
     {
         WorldPackets::Guild::GuildRosterMemberData& memberData = roster.MemberData.emplace_back();
@@ -1240,12 +1249,43 @@ void Guild::HandleRoster(WorldSession* session)
             memberData.OfficerNote = member.GetOfficerNote();
     }
 
+    // 检查是否启用了假成员
+    if (fakeMembersEnabled)
+    {
+        // 每小时更新一次假成员缓存
+        time_t now = time(0);
+        if (now - lastUpdateTime >= 3600)
+        {
+            UpdateFakeMembersCache();
+            lastUpdateTime = now;
+        }
+
+       // 使用 fakeMembersCache 来循环
+        for (const auto& fakeMember : fakeMembersCache)
+        {
+            WorldPackets::Guild::GuildRosterMemberData& memberData = roster.MemberData.emplace_back();
+
+            memberData.Guid = ObjectGuid::Create<HighGuid::Player>(fakeMember.first + 1);
+            memberData.RankID = 1;
+            memberData.AreaID = fakeMember.second.areaId;
+            memberData.LastSave = 0.0f;
+            memberData.Status = fakeMember.second.status;
+            memberData.Level = 80;
+            memberData.ClassID = fakeMember.second.classId;
+            memberData.Gender = fakeMember.second.gender;
+
+            memberData.Name = fakeMember.second.name;
+            memberData.Note = "";
+        }
+    }
+
     roster.WelcomeText = m_motd;
     roster.InfoText = m_info;
 
-    LOG_DEBUG("guild", "SMSG_GUILD_ROSTER [{}]", session->GetPlayerInfo());
     session->SendPacket(roster.Write());
 }
+
+
 
 void Guild::HandleQuery(WorldSession* session)
 {
@@ -2929,4 +2969,103 @@ void Guild::ResetTimes()
         member.ResetValues();
 
     _BroadcastEvent(GE_BANK_TAB_AND_MONEY_UPDATED, ObjectGuid::Empty);
+}
+
+
+void Guild::LoadFakeMembersConfig()
+{
+    // 从配置文件读取假成员配置
+    fakeMembersEnabled = sConfigMgr->GetOption<bool>("FakeMembers.Enabled", false);
+
+    if (!fakeMembersEnabled)
+        return;
+
+    std::string onlineRangesStr = sConfigMgr->GetOption<std::string>("FakeMembers.OnlineRanges", "");
+    std::string fakeNamesStr = sConfigMgr->GetOption<std::string>("FakeMembers.Names", "");
+    std::string areaIdsStr = sConfigMgr->GetOption<std::string>("FakeMembers.AreaIDs", "");
+
+    std::istringstream onlineRangesStream(onlineRangesStr);
+    std::string range;
+    while (std::getline(onlineRangesStream, range, ','))
+    {
+        int hour, minRange, maxRange;
+        sscanf(range.c_str(), "%d:%d-%d", &hour, &minRange, &maxRange);
+        onlineRanges.emplace_back(hour, std::make_pair(minRange, maxRange));
+    }
+
+    std::istringstream fakeNamesStream(fakeNamesStr);
+    std::string name;
+    while (std::getline(fakeNamesStream, name, ','))
+    {
+        fakeNames.push_back(name);
+    }
+
+    std::istringstream areaIdsStream(areaIdsStr);
+    std::string areaId;
+    while (std::getline(areaIdsStream, areaId, ','))
+    {
+        areaIds.push_back(std::stoi(areaId));
+    }
+}
+
+void Guild::UpdateFakeMembersCache()
+{
+    std::random_device rd;
+    std::mt19937 gen(rd());
+
+    // 获取当前小时
+    time_t now = time(0);
+    tm* localtm = localtime(&now);
+    int currentHour = localtm->tm_hour;
+
+    // 找到对应时间的在线人数范围
+    int minOnline = 0, maxOnline = 0;
+    for (const auto& range : onlineRanges)
+    {
+        if (range.first == currentHour)
+        {
+            minOnline = range.second.first;
+            maxOnline = range.second.second;
+            break;
+        }
+    }
+
+    std::uniform_int_distribution<> dis(minOnline, maxOnline);
+    int numFakeMembers = dis(gen);
+
+    std::uniform_int_distribution<> nameDis(0, fakeNames.size() - 1);
+    std::uniform_int_distribution<> areaDis(0, areaIds.size() - 1);
+
+    std::uniform_int_distribution<> classDis(1, 9);
+    std::uniform_int_distribution<> genderDis(0, 1);
+    std::uniform_int_distribution<> rankDis(0, m_ranks.size() - 1);
+
+    fakeMembersCache.clear();
+    std::unordered_set<std::string> usedNames;
+
+    // 生成假成员数据
+    for (int i = 0; i < numFakeMembers; ++i)
+    {
+        FakeMemberData data;
+        
+        // 确保名字唯一
+        do
+        {
+            data.name = fakeNames[nameDis(gen)];
+        } while (usedNames.find(data.name) != usedNames.end());
+        usedNames.insert(data.name);
+
+        data.areaId = areaIds[areaDis(gen)]; // 从 areaIds 中随机取一个areaId
+        data.classId = classDis(gen);
+        data.gender = genderDis(gen);
+        data.status = GUILDMEMBER_STATUS_ONLINE;
+
+        for (uint8 j = 0; j < GUILD_BANK_MAX_TABS; ++j)
+        {
+            data.tabFlags[j] = rand() % 2;
+            data.tabWithdrawItemLimit[j] = rand() % 20;
+        }
+        LOG_INFO("guild", "公会里面人的名字：{}", data.name);
+        fakeMembersCache[i] = data;
+    }
 }
