@@ -16,8 +16,9 @@
  */
 
 #include "CreatureScript.h"
-#include "Opcodes.h"
+#include "GridNotifiers.h"
 #include "ScriptedCreature.h"
+#include "SpellScript.h"
 #include "SpellScriptLoader.h"
 #include "WorldPacket.h"
 #include "the_eye.h"
@@ -379,34 +380,14 @@ struct boss_kaelthas : public BossAI
                             }
                         }
                     });
-                    scheduler.Schedule(2min, GROUP_PROGRESS_PHASE, [this](TaskContext)
+                    scheduler.Schedule(90s, GROUP_PROGRESS_PHASE, [this](TaskContext)
                     {
                         PhaseAllAdvisorsExecute();
                     });
                 }, EVENT_PREFIGHT_PHASE52);
                 break;
             case ACTION_PROGRESS_PHASE_CHECK:
-                if (_phase == PHASE_WEAPONS)
-                {
-                    bool aliveWeapon = false;
-                    summons.DoForAllSummons([&aliveWeapon](WorldObject* summon)
-                    {
-                        if (Creature* summonedCreature = summon->ToCreature())
-                        {
-                            if (summonedCreature->IsAlive())
-                            {
-                                if (summonedCreature->GetEntry() >= NPC_NETHERSTRAND_LONGBOW && summonedCreature->GetEntry() <= NPC_STAFF_OF_DISINTEGRATION)
-                                {
-                                    aliveWeapon = true;
-                                    return;
-                                }
-                            }
-                        }
-                    });
-                    if (!aliveWeapon)
-                        PhaseAllAdvisorsExecute();
-                }
-                else if (_phase == PHASE_ALL_ADVISORS)
+                if (_phase == PHASE_ALL_ADVISORS)
                 {
                     bool advisorAlive = false;
                     summons.DoForAllSummons([&advisorAlive](WorldObject* summon)
@@ -459,11 +440,11 @@ struct boss_kaelthas : public BossAI
             {
                 DoCastRandomTarget(SPELL_FLAME_STRIKE, 0, 100.0f);
             }, 30250ms, 50650ms);
-            ScheduleTimedEvent(20000ms, [&]
+            ScheduleTimedEvent(50000ms, [&]
             {
                 Talk(SAY_SUMMON_PHOENIX);
                 DoCastSelf(SPELL_PHOENIX);
-            }, 31450ms, 66550ms);
+            }, 61450ms, 96550ms);
             ScheduleTimedEvent(5s, [&]
             {
                 scheduler.DelayAll(30s);
@@ -722,11 +703,11 @@ struct boss_kaelthas : public BossAI
         {
             DoCastRandomTarget(SPELL_FLAME_STRIKE, 0, 100.0f);
         }, 30250ms, 50650ms);
-        ScheduleTimedEvent(30000ms, [&]
+        ScheduleTimedEvent(50000ms, [&]
         {
             Talk(SAY_SUMMON_PHOENIX);
             DoCastSelf(SPELL_PHOENIX);
-        }, 31450ms, 66550ms);
+        }, 35450ms, 41550ms);
         //sequence
         ScheduleTimedEvent(20s, 23s, [&]
         {
@@ -1147,12 +1128,29 @@ class spell_kaelthas_mind_control : public SpellScript
         {
             targets.remove_if(Acore::ObjectGUIDCheck(victim->GetGUID(), true));
         }
-        targets.remove_if(Acore::ObjectTypeIdCheck(TYPEID_PLAYER, false));
+
+        targets.remove_if([&](WorldObject const* target) -> bool
+        {
+            if (!target->ToPlayer())
+                return true;
+
+            return (!GetCaster()->IsWithinLOSInMap(target));
+        });
+    }
+
+    void HandleEffect(SpellEffIndex /*effIndex*/)
+    {
+        if (!GetCaster() || !GetHitPlayer())
+            return;
+
+        if (Player* player = GetHitPlayer())
+            GetCaster()->GetThreatMgr().ResetThreat(player);
     }
 
     void Register() override
     {
         OnObjectAreaTargetSelect += SpellObjectAreaTargetSelectFn(spell_kaelthas_mind_control::SelectTarget, EFFECT_ALL, TARGET_UNIT_SRC_AREA_ENEMY);
+        OnEffectHitTarget += SpellEffectFn(spell_kaelthas_mind_control::HandleEffect, EFFECT_ALL, SPELL_AURA_ANY);
     }
 };
 
