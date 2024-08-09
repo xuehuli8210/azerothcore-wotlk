@@ -938,7 +938,8 @@ void Battleground::BattlegroundEndReward(Battleground *bg, Player *player, TeamI
     //uint32 RewardCount = 0;
     uint32 winnerItem = 0;
     uint32 loserItem = 0;
-
+    uint32 QuestId = 0;
+    uint32 QuestRequireItem = 0;
     uint32 damageThreshold = sConfigMgr->GetOption<uint32>("Battleground.Reward.DamageThreshold", 100000);
     uint32 healingThreshold = sConfigMgr->GetOption<uint32>("Battleground.Reward.HealingThreshold", 75000);
 
@@ -951,10 +952,18 @@ void Battleground::BattlegroundEndReward(Battleground *bg, Player *player, TeamI
         {
             winnerItem = sConfigMgr->GetOption<uint32>("Battleground.Reward.Winner.ItemID", 0);
             loserItem = sConfigMgr->GetOption<uint32>("Battleground.Reward.Loser.ItemID", 0);
-
-            if (bgTeamId == winnerTeamId && winnerItem != 0)
+            QuestId = sConfigMgr->GetOption<uint32>("Battleground.Reward.Winner.QuestId", 0);
+            QuestRequireItem = sConfigMgr->GetOption<uint32>("Battleground.Reward.Winner.QuestRequireItem", 0);
+            if (bgTeamId == winnerTeamId)
             {
-                player->AddItem(winnerItem, 1);
+                if(QuestId != 0 && QuestRequireItem != 0 &&  player->HasQuest(QuestId) && !player->GetQuestRewardStatus(QuestId)){
+                    player->AddItem(QuestRequireItem, 1);
+                }
+                if(winnerItem != 0)
+                {
+                     player->AddItem(winnerItem, 1);        
+                }
+               
             }
             else if (loserItem != 0)
             {

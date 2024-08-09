@@ -1213,7 +1213,10 @@ class spell_dk_death_coil : public SpellScript
         Unit* caster = GetCaster();
         if (Unit* target = GetHitUnit())
         {
-            if (caster->IsFriendlyTo(target))
+             // 添加判断，如果 caster 和 target 是同一个人，则不是 friend
+            bool isFriendly = (caster != target) && caster->IsFriendlyTo(target); //处理DK 给敌人加血的问题
+
+            if (isFriendly) 
             {
                 int32 bp = int32(damage * 1.5f);
                 caster->CastCustomSpell(target, SPELL_DK_DEATH_COIL_HEAL, &bp, nullptr, nullptr, true);

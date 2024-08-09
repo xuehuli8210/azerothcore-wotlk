@@ -301,6 +301,8 @@ bool Item::Create(ObjectGuid::LowType guidlow, uint32 itemid, Player const* owne
     for (uint8 i = 0; i < MAX_ITEM_PROTO_SPELLS; ++i)
         SetSpellCharges(i, itemProto->Spells[i].SpellCharges);
 
+    UpdateItemSuffixFactor(guidlow);
+
     SetUInt32Value(ITEM_FIELD_DURATION, itemProto->Duration);
     SetUInt32Value(ITEM_FIELD_CREATE_PLAYED_TIME, 0);
     sScriptMgr->OnItemCreate(this, itemProto, owner);
@@ -484,8 +486,8 @@ bool Item::LoadFromDB(ObjectGuid::LowType guid, ObjectGuid owner_guid, Field* fi
 
     SetInt32Value(ITEM_FIELD_RANDOM_PROPERTIES_ID, fields[7].Get<int16>());
     // recalculate suffix factor
-    if (GetItemRandomPropertyId() < 0)
-        UpdateItemSuffixFactor();
+    //if (GetItemRandomPropertyId() < 0)
+    UpdateItemSuffixFactor(guid);
 
     uint32 durability = fields[8].Get<uint16>();
     SetUInt32Value(ITEM_FIELD_DURABILITY, durability);
@@ -694,7 +696,7 @@ void Item::SetItemRandomProperties(int32 randomPropId)
                     !GetItemSuffixFactor())
             {
                 SetInt32Value(ITEM_FIELD_RANDOM_PROPERTIES_ID, -int32(item_rand->ID));
-                UpdateItemSuffixFactor();
+                //UpdateItemSuffixFactor();
                 SetState(ITEM_CHANGED, GetOwner());
             }
 
@@ -704,12 +706,13 @@ void Item::SetItemRandomProperties(int32 randomPropId)
     }
 }
 
-void Item::UpdateItemSuffixFactor()
+void Item::UpdateItemSuffixFactor(ObjectGuid::LowType guid)
 {
-    uint32 suffixFactor = GenerateEnchSuffixFactor(GetEntry());
-    if (GetItemSuffixFactor() == suffixFactor)
-        return;
-    SetUInt32Value(ITEM_FIELD_PROPERTY_SEED, suffixFactor);
+    //uint32 suffixFactor = GenerateEnchSuffixFactor(GetEntry());
+    //if (GetItemSuffixFactor() == suffixFactor)
+    //    return;
+    //LOG_INFO("UpdateItemSuffixFactor", "guid:{}", guid);
+    SetUInt32Value(ITEM_FIELD_PROPERTY_SEED, guid);
 }
 
 void Item::SetState(ItemUpdateState state, Player* forplayer)

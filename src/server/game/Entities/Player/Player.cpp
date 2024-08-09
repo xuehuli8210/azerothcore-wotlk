@@ -6604,6 +6604,7 @@ void Player::_ApplyItemBonuses(ItemTemplate const* proto, uint8 slot, bool apply
 
             statType = proto->ItemStat[i].ItemStatType;
             val = proto->ItemStat[i].ItemStatValue;
+            sScriptMgr->OnApplyItemModsBefore(this, slot, apply, i, statType, val);
         }
 
         if (val == 0)
@@ -13346,15 +13347,15 @@ uint32 Player::GetRuneBaseCooldown(uint8 index, bool skipGrace)
 
     if (HasAura(103018)) // 替换为具体的光环ID 1
     {
-        cooldown = static_cast<uint32>(cooldown * 0.80); // 减少 20%
+        cooldown = static_cast<uint32>(cooldown * 0.20); // 减少 20%
     }
     else if (HasAura(103016)) // 替换为具体的光环ID 2
     {
-        cooldown = static_cast<uint32>(cooldown * 0.60); // 减少 40%
+        cooldown = static_cast<uint32>(cooldown * 0.40); // 减少 40%
     }
     else if (HasAura(103014)) // 替换为具体的光环ID 3
     {
-        cooldown = static_cast<uint32>(cooldown * 0.40); // 减少 60%
+        cooldown = static_cast<uint32>(cooldown * 0.60); // 减少 60%
     }
 
     return cooldown;

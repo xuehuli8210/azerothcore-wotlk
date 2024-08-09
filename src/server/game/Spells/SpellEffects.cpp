@@ -3192,6 +3192,12 @@ void Spell::EffectSummonPet(SpellEffIndex effIndex)
             return;
     }
 
+    // 检查 petentry 是否为 0
+    if (petentry == 0) {
+        LOG_ERROR("EffectSummonPet", "宠物ID is 0, cannot summon pet.");
+        return;
+    }
+
     float x, y, z;
     owner->GetClosePoint(x, y, z, owner->GetObjectSize());
     Pet* pet = owner->SummonPet(petentry, x, y, z, owner->GetOrientation(), SUMMON_PET);
