@@ -86,38 +86,39 @@ enum UnitBytes1_Flags
 // high byte (3 from 0..3) of UNIT_FIELD_BYTES_2
 enum ShapeshiftForm
 {
-    FORM_NONE               = 0x00,
-    FORM_CAT                = 0x01,
-    FORM_TREE               = 0x02,
-    FORM_TRAVEL             = 0x03,
-    FORM_AQUA               = 0x04,
-    FORM_BEAR               = 0x05,
-    FORM_AMBIENT            = 0x06,
-    FORM_GHOUL              = 0x07,
-    FORM_DIREBEAR           = 0x08,
-    FORM_STEVES_GHOUL       = 0x09,
-    FORM_THARONJA_SKELETON  = 0x0A,
-    FORM_TEST_OF_STRENGTH   = 0x0B,
-    FORM_BLB_PLAYER         = 0x0C,
-    FORM_SHADOW_DANCE       = 0x0D,
-    FORM_CREATUREBEAR       = 0x0E,
-    FORM_CREATURECAT        = 0x0F,
-    FORM_GHOSTWOLF          = 0x10,
-    FORM_BATTLESTANCE       = 0x11,
-    FORM_DEFENSIVESTANCE    = 0x12,
-    FORM_BERSERKERSTANCE    = 0x13,
-    FORM_TEST               = 0x14,
-    FORM_ZOMBIE             = 0x15,
-    FORM_METAMORPHOSIS      = 0x16,
-    FORM_UNDEAD             = 0x19,
-    FORM_MASTER_ANGLER      = 0x1A,
-    FORM_FLIGHT_EPIC        = 0x1B,
-    FORM_SHADOW             = 0x1C,
-    FORM_FLIGHT             = 0x1D,
-    FORM_STEALTH            = 0x1E,
-    FORM_MOONKIN            = 0x1F,
-    FORM_SPIRITOFREDEMPTION = 0x20
+    FORM_NONE               = 0x00, // 无形态
+    FORM_CAT                = 0x01, // 猎豹形态
+    FORM_TREE               = 0x02, // 生命之树形态
+    FORM_TRAVEL             = 0x03, // 旅行形态
+    FORM_AQUA               = 0x04, // 水栖形态
+    FORM_BEAR               = 0x05, // 熊形态
+    FORM_AMBIENT            = 0x06, // 环境形态（未使用）
+    FORM_GHOUL              = 0x07, // 地穴恶魔形态（DK复生）
+    FORM_DIREBEAR           = 0x08, // 巨熊形态
+    FORM_STEVES_GHOUL       = 0x09, // 史蒂夫的食尸鬼（未使用）
+    FORM_THARONJA_SKELETON  = 0x0A, // 塔隆亚的骷髅形态
+    FORM_TEST_OF_STRENGTH   = 0x0B, // 力量测试形态（未使用）
+    FORM_BLB_PLAYER         = 0x0C, // BLB玩家形态（未使用）
+    FORM_SHADOW_DANCE       = 0x0D, // 暗影之舞形态（盗贼）
+    FORM_CREATUREBEAR       = 0x0E, // 生物熊形态（未使用）
+    FORM_CREATURECAT        = 0x0F, // 生物猫形态（未使用）
+    FORM_GHOSTWOLF          = 0x10, // 幽灵狼形态（萨满）
+    FORM_BATTLESTANCE       = 0x11, // 战斗姿态（战士）
+    FORM_DEFENSIVESTANCE    = 0x12, // 防御姿态（战士）
+    FORM_BERSERKERSTANCE    = 0x13, // 狂暴姿态（战士）
+    FORM_TEST               = 0x14, // 测试形态（未使用）
+    FORM_ZOMBIE             = 0x15, // 僵尸形态（未使用）
+    FORM_METAMORPHOSIS      = 0x16, // 恶魔变形（术士）
+    FORM_UNDEAD             = 0x19, // 亡灵形态（未使用）
+    FORM_MASTER_ANGLER      = 0x1A, // 钓鱼大师形态
+    FORM_FLIGHT_EPIC        = 0x1B, // 史诗飞行形态（德鲁伊快速飞行）
+    FORM_SHADOW             = 0x1C, // 暗影形态（牧师）
+    FORM_FLIGHT             = 0x1D, // 飞行形态（德鲁伊普通飞行）
+    FORM_STEALTH            = 0x1E, // 潜行形态（盗贼/德鲁伊）
+    FORM_MOONKIN            = 0x1F, // 枭兽形态（德鲁伊）
+    FORM_SPIRITOFREDEMPTION = 0x20  // 救赎之魂（牧师死亡时）
 };
+
 
 // low byte (0 from 0..3) of UNIT_FIELD_BYTES_2
 enum SheathState

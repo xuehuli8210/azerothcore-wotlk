@@ -1346,6 +1346,49 @@ class spell_hun_target_self_and_pet : public SpellScript
     }
 };
 
+//侍从宝石哪些技能处理 处理光环让技能消失的情况。
+class spell_hun_pet_buff_handler : public AuraScript
+{
+    PrepareAuraScript(spell_hun_pet_buff_handler);
+
+    bool Load() override
+    {
+        return GetCaster() && GetCaster()->GetTypeId() == TYPEID_PLAYER;
+    }
+
+    void OnPeriodic(AuraEffect const* aurEff)
+    {
+        PreventDefaultAction();
+        if (Player* caster = GetCaster()->ToPlayer())
+        {
+            // 检查玩家是否有宠物
+            if (Pet* pet = caster->GetPet())
+            {
+                // 获取当前Aura对应的SpellInfo
+                if (const SpellInfo* spellInfo = GetSpellInfo())
+                {
+                    uint32 petSpellId = spellInfo->Effects[EFFECT_1].TriggerSpell;
+                    // 触发EffectTRIGGER_2效果
+                    if (petSpellId)
+                    {
+                        caster->CastSpell(caster, petSpellId, true);
+                    }
+                }
+            }
+            else
+            {   // 玩家没有宠物时，不执行技能效果
+                return;
+            }
+        }
+    }
+
+    void Register() override
+    {
+        OnEffectPeriodic += AuraEffectPeriodicFn(spell_hun_pet_buff_handler::OnPeriodic, EFFECT_1, SPELL_AURA_PERIODIC_TRIGGER_SPELL);
+    }
+};
+
+
 void AddSC_hunter_spell_scripts()
 {
     RegisterSpellScript(spell_hun_check_pet_los);
@@ -1377,5 +1420,6 @@ void AddSC_hunter_spell_scripts()
     RegisterSpellScript(spell_hun_intimidation);
     RegisterSpellScript(spell_hun_bestial_wrath);
     RegisterSpellScript(spell_hun_target_self_and_pet);
+    RegisterSpellScript(spell_hun_pet_buff_handler);
 }
 

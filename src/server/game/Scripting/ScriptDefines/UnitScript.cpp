@@ -148,6 +148,11 @@ void ScriptMgr::OnUnitDeath(Unit* unit, Unit* killer)
     CALL_ENABLED_HOOKS(UnitScript, UNITHOOK_ON_UNIT_DEATH, script->OnUnitDeath(unit, killer));
 }
 
+void ScriptMgr::OnUnitSetLevel(Unit* unit, uint8& lvl)
+{
+    CALL_ENABLED_HOOKS(UnitScript, UNITHOOK_ON_UNIT_SET_LEVEL, script->OnUnitSetLevel(unit, lvl));
+}
+
 UnitScript::UnitScript(const char* name, bool addToScripts, std::vector<uint16> enabledHooks)
     : ScriptObject(name, UNITHOOK_END)
 {

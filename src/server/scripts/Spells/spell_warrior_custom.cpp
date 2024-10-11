@@ -47,7 +47,7 @@ enum WarriorSpells
 class spell_warrior_battle_shout : public AuraScript
 {
     PrepareAuraScript(spell_warrior_battle_shout);
-
+    
     void CalculateAmount(AuraEffect const* /* aurEff */, int32& amount, bool& /*canBeRecalculated*/)
     {
         if (Unit* target = GetUnitOwner())
@@ -128,19 +128,20 @@ class spell_warrior_demoralizing_shout : public AuraScript
 class spell_warr_heroic_throw_stun : public SpellScript
 {
     PrepareSpellScript(spell_warr_heroic_throw_stun);
-
+    bool Load() override
+    {
+        return GetCaster()->GetTypeId() == TYPEID_PLAYER;
+    }
     void HandleAfterHit()
     {
-        if (Unit* caster = GetCaster()){
-            if (!caster->HasAura(SPELL_STUN_EFFECT_AURA))
+        Player* player = GetCaster()->ToPlayer();
+        if (GetCaster()->ToPlayer()->HasAura(SPELL_STUN_EFFECT_AURA))
+        {
+           if (Unit* target = GetHitUnit())
             {
-                return;
+                GetCaster()->ToPlayer()->CastSpell(target, SPELL_STUN_EFFECT, true);
             }
-            if (Unit* target = GetHitUnit())
-            {
-                caster->CastSpell(target, SPELL_STUN_EFFECT, true);
-            }
-        }  
+        }
     }
 
     void Register() override

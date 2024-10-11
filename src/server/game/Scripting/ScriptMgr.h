@@ -560,6 +560,7 @@ public: /* UnitScript */
     void OnUnitEnterEvadeMode(Unit* unit, uint8 why);
     void OnUnitEnterCombat(Unit* unit, Unit* victim);
     void OnUnitDeath(Unit* unit, Unit* killer);
+    void OnUnitSetLevel(Unit* unit, uint8& lvl);
 
 public: /* MovementHandlerScript */
     void OnPlayerMove(Player* player, MovementInfo movementInfo, uint32 opcode);

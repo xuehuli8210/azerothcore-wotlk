@@ -29,6 +29,7 @@
 #include "GameTime.h"
 #include "MovementGenerator.h"
 #include "PointMovementGenerator.h" 
+#include <unordered_map>
 
 // 发送冷却数据包的函数
 void SendCooldownPacket(Player* player, uint32 spellId, uint32 cooldown) {
@@ -789,6 +790,194 @@ class spell_pri_mind_blast : public SpellScriptLoader
 
 
 
+// 当玩家有技能光环92010 无法释放飞行法术
+class spell_restrict_aura_cast : public SpellScript
+{
+    PrepareSpellScript(spell_restrict_aura_cast);
+
+    SpellCastResult CheckCast()
+    {
+        Unit* caster = GetCaster();
+        if (Player* player = caster->ToPlayer())
+        {
+            uint32 auraId = 92010;
+            if (player->HasAura(auraId))
+            {
+                return SPELL_FAILED_INCORRECT_AREA; // 施法失败，提示无法施法
+            }
+        }
+        return SPELL_CAST_OK; // 允许施法
+    }
+
+    void Register() override
+    {
+        OnCheckCast += SpellCheckCastFn(spell_restrict_aura_cast::CheckCast);
+    }
+};
+
+struct BlizzardSpellInfo
+{
+    uint32 blizzardAuraId;
+    uint32 nonChannelingBlizzardId;
+};
+
+std::unordered_map<uint32, BlizzardSpellInfo> blizzardSpellMap = {
+    {42940, {108012, 108011}},  //暴风雪
+    {47820, {109012, 109011}},   //火焰之雨
+    {58434, {103012, 103011}},   //乱射
+};
+
+class spell_mage_blizzard_non_channeling : public SpellScript
+{
+    PrepareSpellScript(spell_mage_blizzard_non_channeling);
+
+    bool Load() override
+    {
+        return GetCaster()->GetTypeId() == TYPEID_PLAYER;
+    }
+
+    void HandleOnCast()
+    {
+        Player* player = GetCaster()->ToPlayer();
+        uint32 spellId = GetSpellInfo()->Id;
+
+        if (blizzardSpellMap.find(spellId) != blizzardSpellMap.end())
+        {
+            BlizzardSpellInfo info = blizzardSpellMap[spellId];
+
+            if (player->HasAura(info.blizzardAuraId))
+            {
+                WorldLocation const* loc = GetExplTargetDest();
+                if (loc)
+                {
+                    // 在目标位置释放新的非引导技能
+                    GetCaster()->CastSpell(loc->GetPositionX(), loc->GetPositionY(), loc->GetPositionZ(), info.nonChannelingBlizzardId, true);
+                    
+                    // 为原来的技能设置8秒冷却时间
+                    SendCooldownPacket(player, spellId, 5 * IN_MILLISECONDS);
+                }
+            }
+        }
+    }
+
+    void HandleAfterHit(SpellEffIndex /*effIndex*/)
+    {
+        PreventHitEffect(EFFECT_0);
+        PreventHitEffect(EFFECT_1);
+    }
+
+    void Register() override
+    {
+        OnCast += SpellCastFn(spell_mage_blizzard_non_channeling::HandleOnCast);
+        OnEffectHit += SpellEffectFn(spell_mage_blizzard_non_channeling::HandleAfterHit, EFFECT_0, SPELL_EFFECT_PERSISTENT_AREA_AURA);
+        OnEffectHit += SpellEffectFn(spell_mage_blizzard_non_channeling::HandleAfterHit, EFFECT_1, SPELL_EFFECT_APPLY_AURA);
+    }
+};
+
+//自由飓风 ID 48467
+#define JUFENG_AURA_ID 111012  // 替换为实际的光环ID
+#define SPELL_NON_CHANNELING_JUFENG  111011  // 替换为实际的光环ID
+class spell_mage_jufeng_non_channeling : public SpellScript
+{
+    PrepareSpellScript(spell_mage_jufeng_non_channeling);
+    bool Load() override
+    {
+        return GetCaster()->GetTypeId() == TYPEID_PLAYER;
+    }
+    bool Validate(SpellInfo const* /*spellInfo*/) override
+    {
+        return ValidateSpellInfo({ SPELL_NON_CHANNELING_JUFENG,JUFENG_AURA_ID });
+    }
+    void HandleOnCast()
+    {
+        Player* player = GetCaster()->ToPlayer();
+        if (player->HasAura(JUFENG_AURA_ID))
+        {
+            // 施法者有特定的光环，使用不需要引导的技能
+            WorldLocation const* loc = GetExplTargetDest();
+            if (loc)
+            {
+                // 在目标位置释放新的非引导技能
+                GetCaster()->CastSpell(loc->GetPositionX(), loc->GetPositionY(), loc->GetPositionZ(), SPELL_NON_CHANNELING_JUFENG, true);
+                
+                // 为原来的技能设置3秒冷却时间
+                SendCooldownPacket(player,GetSpellInfo()->Id, 5 * IN_MILLISECONDS);
+            }
+        }
+    }
+    void HandleAfterHit(SpellEffIndex /*effIndex*/)
+    {
+        // 现在可以在一个有效的钩子中阻止原技能的效果
+        PreventHitEffect(EFFECT_0);
+        PreventHitEffect(EFFECT_1); 
+        PreventHitEffect(EFFECT_2); 
+    }
+     
+     void Register() override
+    {
+        OnCast += SpellCastFn(spell_mage_jufeng_non_channeling::HandleOnCast);
+        OnEffectHit += SpellEffectFn(spell_mage_jufeng_non_channeling::HandleAfterHit, EFFECT_0, SPELL_EFFECT_PERSISTENT_AREA_AURA);
+        OnEffectHit += SpellEffectFn(spell_mage_jufeng_non_channeling::HandleAfterHit, EFFECT_1, SPELL_EFFECT_PERSISTENT_AREA_AURA);
+        OnEffectHit += SpellEffectFn(spell_mage_jufeng_non_channeling::HandleAfterHit, EFFECT_2, SPELL_EFFECT_APPLY_AURA);
+    }
+};
+
+//德鲁伊 111021 德鲁伊形态法术
+class spell_druid_form_based_combat_spell : public AuraScript
+{
+    PrepareAuraScript(spell_druid_form_based_combat_spell);
+    bool Load() override
+    {
+        return GetCaster()->GetTypeId() == TYPEID_PLAYER;
+    }
+    void OnPeriodic(AuraEffect const* /*aurEff*/)
+    {
+        Player* player = GetCaster()->ToPlayer();
+        
+        // 检查玩家是否在战斗中
+        if (player->IsInCombat())
+        {
+            uint32 spellId = 0;
+            // 根据德鲁伊形态决定施放的法术
+            switch (player->GetShapeshiftForm())
+            {
+                case FORM_NONE: // 无形态或生命之树
+                case FORM_TREE:
+                    spellId = 53251; // 野性成长
+                    break;
+                case FORM_CAT: // 猎豹形态
+                    spellId = 50334; // 狂暴
+                    break;
+                case FORM_BEAR: // 熊形态
+                case FORM_DIREBEAR: // 巨熊形态
+                    spellId = 22812; // 树皮术
+                    break;
+                case FORM_MOONKIN: // 枭兽形态
+                    spellId = 53201; // 星辰坠落
+                    break;
+                case FORM_TRAVEL: // 旅行形态
+                case FORM_AQUA: // 水栖形态
+                case FORM_FLIGHT: // 飞行形态
+                case FORM_FLIGHT_EPIC: // 迅捷飞行形态
+                     spellId = 61384; // 台风
+                    break;
+                default:
+                    break;
+            }
+
+            // 如果找到对应法术ID，则施放
+            if (spellId)
+                player->CastSpell(player, spellId, true);
+        }
+    
+    }
+
+    void Register() override
+    {
+        // 注册周期性触发函数，EFFECT_0 对应 SPELL_AURA_PERIODIC_TRIGGER_SPELL 效果
+        OnEffectPeriodic += AuraEffectPeriodicFn(spell_druid_form_based_combat_spell::OnPeriodic, EFFECT_0, SPELL_AURA_PERIODIC_DUMMY);
+    }
+};
 
 
 void AddSC_custom_spell_scripts()
@@ -807,6 +996,13 @@ void AddSC_custom_spell_scripts()
     new spell_pri_mind_blast(); //心灵震爆造成的伤害提高75%，并且会对目标周围10码内的所有敌人造成伤害，同时为你恢复生命值，其数值相当于所造成伤害的25%。
 
     RegisterSpellScript(spell_mage_custom_damage); // 配合0.3秒触发一次的技能 这是触发的技能
+
+    RegisterSpellScript(spell_restrict_aura_cast); //禁止施法飞行
+
+    RegisterSpellScript(spell_mage_blizzard_non_channeling); // 暴风雪技能不需要引导
+    RegisterSpellScript(spell_mage_jufeng_non_channeling); // 飓风技能不需要引导
+
+    RegisterSpellScript(spell_druid_form_based_combat_spell);
 }
 
 /*
@@ -839,4 +1035,9 @@ DoEffectCalcSpellMod: 在计算光环效果的法术修饰时调用。
 OnEffectAbsorb/AfterEffectAbsorb: 当吸收型光环效果准备减少伤害时调用。
 OnEffectManaShield/AfterEffectManaShield: 类似于吸收效果，专用于法力护盾。
 OnEffectSplit: 当伤害分摊效果作用时调用。
+
+
+uint32 cooldown = -10 * IN_MILLISECONDS;
+player->ModifySpellCooldown(642 , cooldown);
 */
+

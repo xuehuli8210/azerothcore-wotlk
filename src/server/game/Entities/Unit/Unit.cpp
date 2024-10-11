@@ -15399,6 +15399,8 @@ float Unit::GetWeaponDamageRange(WeaponAttackType attType, WeaponDamageRange typ
 
 void Unit::SetLevel(uint8 lvl, bool showLevelChange)
 {
+    sScriptMgr->OnUnitSetLevel(this, lvl);
+    
     SetUInt32Value(UNIT_FIELD_LEVEL, lvl);
 
     // Xinef: unmark field bit update
