@@ -2519,6 +2519,31 @@ void World::SendGlobalMessage(WorldPacket const* packet, WorldSession* self, Tea
     }
 }
 
+void World::SendScreenMessage(const char *text, Player* target, bool GM, TeamId teamId)
+{
+    WorldPacket data;
+    ChatHandler::BuildChatPacket(data, CHAT_MSG_RAID_BOSS_EMOTE, LANG_UNIVERSAL,
+        NULL, target, text);
+
+    if (target && target->GetSession())
+        target->GetSession()->SendPacket(&data);
+    else if (GM)
+        SendGlobalGMMessage(&data, NULL, teamId);
+    else
+        SendGlobalMessage(&data, NULL, teamId);
+}
+
+void World::SendFactionMessage(ServerMessageType type, const char *text, TeamId teamid)
+{
+    WorldPacket data(SMSG_CHAT_SERVER_MESSAGE, 50);              // guess size
+    data << uint32(type);
+    if (type <= SERVER_MSG_STRING)
+        data << text;
+
+    SendGlobalMessage(&data, NULL, teamid);
+}
+
+
 /// Send a packet to all GMs (except self if mentioned)
 void World::SendGlobalGMMessage(WorldPacket const* packet, WorldSession* self, TeamId teamId)
 {

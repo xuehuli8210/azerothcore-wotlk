@@ -239,6 +239,8 @@ public:
     void LoadConfigSettings(bool reload = false) override;
 
     void SendGlobalMessage(WorldPacket const* packet, WorldSession* self = nullptr, TeamId teamId = TEAM_NEUTRAL) override;
+    void SendScreenMessage(const char *text, Player* player = NULL, bool GM = false, TeamId teamId = TEAM_NEUTRAL) override;
+    void SendFactionMessage(ServerMessageType type, const char *text = "", TeamId teamid = TEAM_NEUTRAL) override;
     void SendGlobalGMMessage(WorldPacket const* packet, WorldSession* self = nullptr, TeamId teamId = TEAM_NEUTRAL) override;
     bool SendZoneMessage(uint32 zone, WorldPacket const* packet, WorldSession* self = nullptr, TeamId teamId = TEAM_NEUTRAL) override;
     void SendZoneText(uint32 zone, const char* text, WorldSession* self = nullptr, TeamId teamId = TEAM_NEUTRAL) override;
