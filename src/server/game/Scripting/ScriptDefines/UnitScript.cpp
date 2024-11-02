@@ -153,6 +153,11 @@ void ScriptMgr::OnUnitSetLevel(Unit* unit, uint8& lvl)
     CALL_ENABLED_HOOKS(UnitScript, UNITHOOK_ON_UNIT_SET_LEVEL, script->OnUnitSetLevel(unit, lvl));
 }
 
+void ScriptMgr::UnitChangeLootId(Creature* creature, uint32& lootId)
+{
+    CALL_ENABLED_HOOKS(UnitScript, UNITHOOK_UINT_CHANGE_LOOTID, script->UnitChangeLootId(creature, lootId));
+}
+
 UnitScript::UnitScript(const char* name, bool addToScripts, std::vector<uint16> enabledHooks)
     : ScriptObject(name, UNITHOOK_END)
 {

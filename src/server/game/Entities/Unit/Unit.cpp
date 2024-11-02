@@ -18002,8 +18002,9 @@ void Unit::Kill(Unit* killer, Unit* victim, bool durabilityLoss, WeaponAttackTyp
         {
             Loot* loot = &creature->loot;
             loot->clear();
-
-            if (uint32 lootid = creature->GetCreatureTemplate()->lootid)
+            uint32 lootid = creature->GetCreatureTemplate()->lootid;
+            sScriptMgr->UnitChangeLootId(creature, lootid);
+            if (lootid)
                 loot->FillLoot(lootid, LootTemplates_Creature, looter, false, false, creature->GetLootMode(), creature);
 
             if (creature->GetLootMode())

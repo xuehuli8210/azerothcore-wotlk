@@ -561,6 +561,7 @@ public: /* UnitScript */
     void OnUnitEnterCombat(Unit* unit, Unit* victim);
     void OnUnitDeath(Unit* unit, Unit* killer);
     void OnUnitSetLevel(Unit* unit, uint8& lvl);
+    void UnitChangeLootId(Creature* creature, uint32& lootId);
 
 public: /* MovementHandlerScript */
     void OnPlayerMove(Player* player, MovementInfo movementInfo, uint32 opcode);
